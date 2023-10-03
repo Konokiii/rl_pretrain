@@ -41,6 +41,7 @@ def main():
         'pretrain_mode', 'pre', ['none'],  # 'none', 'q_sprime', 'mdp_q_sprime'
         'qf_hidden_layer', 'l', [2],
         'n_epochs', 'ep', [400],
+        'use_safe_q', 'safeQ', [False],
         'seed', '', [42, 666, 1024, 2048, 4069]#[42, 666, 1024, 2048, 4069] + list(range(15)),
     ]
 

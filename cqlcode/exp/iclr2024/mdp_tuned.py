@@ -42,6 +42,7 @@ def main():
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
         'qf_hidden_layer', 'l', [2],
         'n_epochs', 'ep', [400],
+        'use_safe_q', 'safeQ', [False],
         'mdppre_n_state', 'ns', [100],
         'mdppre_policy_temperature', 'pt', [1],
         'mdppre_same_as_s_and_policy', 'same', [True],

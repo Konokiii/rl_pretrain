@@ -94,6 +94,7 @@ def get_default_variant_dict():
         distill_only=False,
         q_network_feature_lr_scale=1,  # 0 means pretrained/random features are frozen
         init_scheme=None,
+        use_safe_q=True,
 
         # mdp pretrain related
         mdppre_n_traj=1000,
@@ -664,7 +665,8 @@ def run_single_exp(variant):
     dataset['rewards'] = dataset['rewards'] * variant['reward_scale'] + variant['reward_bias']
     dataset['actions'] = np.clip(dataset['actions'], -variant['clip_action'], variant['clip_action'])
     max_reward = max(dataset['rewards'])
-    safe_q_max = max_reward * 100  # when discount is 0.99
+    # when discount is 0.99
+    safe_q_max = max_reward * 100 if variant['use_safe_q'] else None
     print('max reward:', max_reward)
 
     best_agent = deepcopy(agent)
