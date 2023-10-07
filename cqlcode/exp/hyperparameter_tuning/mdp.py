@@ -37,10 +37,10 @@ def main():
     exp_prefix = 'postICLR_best_cqlr3n'
     settings = [
         'env', '', MUJOCO_4_ENVS,
-        'dataset', '', ['medium'],#MUJOCO_3_DATASETS,
-        'do_pretrain_only', '', [True],
+        'dataset', '', MUJOCO_3_DATASETS,
+        # 'do_pretrain_only', '', [True],
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
-        'qf_hidden_layer', 'l', [3],
+        'qf_hidden_layer', 'l', [2, 3],
         'n_epochs', 'ep', [200],
         'use_safe_q', 'safeQ', [False],
         'mdppre_n_state', 'ns', [100],
@@ -48,7 +48,7 @@ def main():
         'mdppre_same_as_s_and_policy', 'same', [True],
         'n_pretrain_step_per_epoch', 'preUps', [5000],
         'n_pretrain_epochs', 'preEp', [20],
-        'seed', '', [42]#[42, 666, 1024, 2048, 4069],
+        'seed', '', [42, 666, 1024, 2048, 4069],
     ]
 
     indexes, actual_setting, total, hyper2logname = get_setting_dt(settings, setting)
