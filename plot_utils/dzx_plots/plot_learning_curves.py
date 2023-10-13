@@ -64,7 +64,7 @@ default_performance_smooth = 5
 default_cql_q_smooth = 5
 default_cql_combined_loss_smooth = 5
 
-font_size = 21
+font_size = 10
 
 
 def plot_cql_performance_curves(labels, base_names):
@@ -474,22 +474,26 @@ def plot_dt_loss_curves():
 # ]
 
 labels = [
-    'CQL',
-    'Tuned_CQL',
-    'MDP',
-    'Tuned_MDP'
-]
-base_names = [
-    cql_2x,
-    tuned_cql_2x,
-    cql_mdp_2x,
-    tuned_mdp_2x
+    'CQL_l2',
+    'CQL_l3',
+    'MDP_l2',
+    'MDP_l3'
 ]
 
-data_path = '../../code/checkpoints/final'
+base_names = [
+    cql_best_l2,
+    cql_best_l3,
+    mdp_best_l2,
+    mdp_best_l3
+]
+
+# 4. non safe q and cql lr ablation
+# 5. non safe q and mdp lr ablation
+# 6. best tuning 
+data_path = '../../code/checkpoints/postICLR'
 save_path = '../../figures/'
 plot_cql_performance_curves(labels, base_names)
-# plot_cql_q_loss_curves(labels, base_names)
+plot_cql_q_loss_curves(labels, base_names)
 # plot_cql_combined_loss_curves(labels, base_names)
 # plot_dt_performance_curves()
 # plot_dt_loss_curves()

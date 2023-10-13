@@ -23,7 +23,7 @@ def get_other_score_measures(path):
     return d
 
 
-base_path = '../code/checkpoints/long_tuned_cql'
+base_path = '../code/checkpoints/postICLR 2'
 for root, dirs, files in os.walk(base_path):
     if '/postICLR' in root:
         for dir in dirs:
