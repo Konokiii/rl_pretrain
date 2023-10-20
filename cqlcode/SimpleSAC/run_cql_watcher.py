@@ -436,89 +436,104 @@ def run_single_exp(variant):
     #  3. assign random vectors for each state and action?
 
     if variant['pretrain_mode'] != 'none':
-        pretrain_model_folder_path = '/cqlcode/pretrained_cql_models/'
-        if variant['pretrain_mode'] not in ['mdp_q_sprime', 'mdp_same_proj', 'mdp_same_noproj']:
-            if variant['pretrain_data_ratio'] == 1:
-                dataset_name_string = variant['dataset']
-            else:
-                dataset_name_string = '%s_preR%s' % (variant['dataset'], str(variant['pretrain_data_ratio']))
-            pretrain_model_name = '%s_%s_%s_preM%s_l%d_hs%d_preUps%s_preEp%s.pth' % (
-                'cql', variant['env'], dataset_name_string, variant['pretrain_mode'],
-                variant['qf_hidden_layer'], variant['qf_hidden_unit'], variant['n_pretrain_step_per_epoch'],
-                variant['n_pretrain_epochs'])
-        else:  # mdp pretrain
-            if variant['pretrain_data_ratio'] == 1:
-                dataset_name_string = variant['mdppre_n_traj']
-            else:
-                dataset_name_string = '%d_preR%s' % (variant['mdppre_n_traj'], str(variant['pretrain_data_ratio']))
-            pretrain_model_name = '%s_%s_preTraj%s_nS%d_nA%d_pt%s_tt%s_dimS%d_dimA%d_initS%s_preM%s_l%d_hs%d_preUps' \
-                                  '%s_preEp%s.pth' % ('cql', variant['env'],
-                                                      # downstream task env is needed here because pretrain projection will be different for each task
-                                                      dataset_name_string, variant['mdppre_n_state'],
-                                                      variant['mdppre_n_action'],
-                                                      str(variant['mdppre_policy_temperature']),
-                                                      str(variant['mdppre_transition_temperature']),
-                                                      variant['mdppre_state_dim'], variant['mdppre_action_dim'],
-                                                      variant['mdppre_random_start'],
-                                                      variant['pretrain_mode'], variant['qf_hidden_layer'],
-                                                      variant['qf_hidden_unit'],
-                                                      variant['n_pretrain_step_per_epoch'],
-                                                      variant['n_pretrain_epochs'])
-
-        pretrain_full_path = os.path.join(pretrain_model_folder_path, pretrain_model_name)
-        if os.path.exists(pretrain_full_path):
-            if not torch.cuda.is_available():
-                pretrain_dict = torch.load(pretrain_full_path, map_location=torch.device('cpu'))
-            else:
-                pretrain_dict = torch.load(pretrain_full_path)
-
-            pretrained_agent = pretrain_dict['agent']
-            if variant['init_scheme'] is not None:
-                pre_qf1 = pretrained_agent.qf1
-                pre_qf2 = pretrained_agent.qf2
-                sendback_path = os.path.join(pretrain_model_folder_path + 'sendbackmodel/', pretrain_model_name)
-                if not os.path.exists(sendback_path):
-                    torch.save({'qf1': pre_qf1, 'qf2': pre_qf2}, sendback_path)
-                    print('Saved state_dict of Q functions to send back.')
-                else:
-                    print('Pretrained Q functions are already saved.')
-
-                if variant['init_scheme'] == 'layerGuass':
-                    for net in [pre_qf1, pre_qf2]:
-                        hidden_layers = net.hidden_layers
-                        for l in hidden_layers:
-                            weight_mean, weight_std = l.weight.mean().item(), l.weight.std().item()
-                            bias_mean, bias_std = l.bias.mean().item(), l.bias.std().item()
-                            torch.nn.init.normal_(l.weight, weight_mean, weight_std)
-                            torch.nn.init.normal_(l.bias, bias_mean, bias_std)
-                elif variant['init_scheme'] == 'modelGuass':
-                    for net in [pre_qf1, pre_qf2]:
-                        hidden_layers = net.hidden_layers
-                        weights = torch.cat([l.weight.flatten() for l in hidden_layers])
-                        biases = torch.cat([l.bias.flatten() for l in hidden_layers])
-                        weight_mean, weight_std = weights.mean().item(), weights.std().item()
-                        bias_mean, bias_std = biases.mean().item(), biases.std().item()
-                        for l in hidden_layers:
-                            torch.nn.init.normal_(l.weight, weight_mean, weight_std)
-                            torch.nn.init.normal_(l.bias, bias_mean, bias_std)
-                elif variant['init_scheme'] == 'wholeGuass':
-                    for net in [pre_qf1, pre_qf2]:
-                        hidden_layers = net.hidden_layers
-                        params = torch.cat([p.flatten() for p in hidden_layers.parameters()])
-                        param_mean, param_std = params.mean().item(), params.std().item()
-                        for p in hidden_layers.parameters():
-                            torch.nn.init.normal_(p, param_mean, param_std)
-
-                print('Initialized model parameters according to customized schemes!')
-
-            agent.qf1.load_state_dict(pretrained_agent.qf1.state_dict())
-            agent.qf2.load_state_dict(pretrained_agent.qf2.state_dict())
+        if variant['init_scheme'] == 'crude_init':
+            for net in [agent.qf1, agent.qf2]:
+                hidden_layers = net.hidden_layers
+                for l, layer in enumerate(hidden_layers):
+                    if l == 0:
+                        weight_mean, weight_std = np.array([-0.001, 0.001, -0.002, 0.003]).mean().item(), np.array([0.132,0.144,0.132, 0.087]).mean().item()
+                        bias_mean, bias_std = np.array([-0.161, -0.137, -0.178, -0.274]).mean().item(), np.array([0.095, 0.129, 0.097, 0.074]).mean().item()
+                    elif l == 1:
+                        weight_mean, weight_std = np.array([-0.032, -0.024, -0.032, -0.036]).mean().item(), np.array([0.099, 0.07, 0.103, 0.088]).mean().item()
+                        bias_mean, bias_std = np.array([-0.043, -0.032, -0.044, -0.053]).mean().item(), np.array([0.040, 0.037, 0.044, 0.043]).mean().item()
+                    torch.nn.init.normal_(layer.weight, weight_mean, weight_std)
+                    torch.nn.init.normal_(layer.bias, bias_mean, bias_std)
             loaded = True
-            print("Pretrained model loaded from:", pretrain_full_path)
-
+            print('Initialized the Q nets with statistics directly.')
         else:
-            print("Pretrained model does not exist:", pretrain_full_path)
-            loaded = False
+            pretrain_model_folder_path = '/cqlcode/pretrained_cql_models/'
+            if variant['pretrain_mode'] not in ['mdp_q_sprime', 'mdp_same_proj', 'mdp_same_noproj']:
+                if variant['pretrain_data_ratio'] == 1:
+                    dataset_name_string = variant['dataset']
+                else:
+                    dataset_name_string = '%s_preR%s' % (variant['dataset'], str(variant['pretrain_data_ratio']))
+                pretrain_model_name = '%s_%s_%s_preM%s_l%d_hs%d_preUps%s_preEp%s.pth' % (
+                    'cql', variant['env'], dataset_name_string, variant['pretrain_mode'],
+                    variant['qf_hidden_layer'], variant['qf_hidden_unit'], variant['n_pretrain_step_per_epoch'],
+                    variant['n_pretrain_epochs'])
+            else:  # mdp pretrain
+                if variant['pretrain_data_ratio'] == 1:
+                    dataset_name_string = variant['mdppre_n_traj']
+                else:
+                    dataset_name_string = '%d_preR%s' % (variant['mdppre_n_traj'], str(variant['pretrain_data_ratio']))
+                pretrain_model_name = '%s_%s_preTraj%s_nS%d_nA%d_pt%s_tt%s_dimS%d_dimA%d_initS%s_preM%s_l%d_hs%d_preUps' \
+                                      '%s_preEp%s.pth' % ('cql', variant['env'],
+                                                          # downstream task env is needed here because pretrain projection will be different for each task
+                                                          dataset_name_string, variant['mdppre_n_state'],
+                                                          variant['mdppre_n_action'],
+                                                          str(variant['mdppre_policy_temperature']),
+                                                          str(variant['mdppre_transition_temperature']),
+                                                          variant['mdppre_state_dim'], variant['mdppre_action_dim'],
+                                                          variant['mdppre_random_start'],
+                                                          variant['pretrain_mode'], variant['qf_hidden_layer'],
+                                                          variant['qf_hidden_unit'],
+                                                          variant['n_pretrain_step_per_epoch'],
+                                                          variant['n_pretrain_epochs'])
+
+            pretrain_full_path = os.path.join(pretrain_model_folder_path, pretrain_model_name)
+            if os.path.exists(pretrain_full_path):
+                if not torch.cuda.is_available():
+                    pretrain_dict = torch.load(pretrain_full_path, map_location=torch.device('cpu'))
+                else:
+                    pretrain_dict = torch.load(pretrain_full_path)
+
+                pretrained_agent = pretrain_dict['agent']
+                if variant['init_scheme'] is not None:
+                    pre_qf1 = pretrained_agent.qf1
+                    pre_qf2 = pretrained_agent.qf2
+                    sendback_path = os.path.join(pretrain_model_folder_path + 'sendbackmodel/', pretrain_model_name)
+                    if not os.path.exists(sendback_path):
+                        torch.save({'qf1': pre_qf1, 'qf2': pre_qf2}, sendback_path)
+                        print('Saved state_dict of Q functions to send back.')
+                    else:
+                        print('Pretrained Q functions are already saved.')
+
+                    if variant['init_scheme'] == 'layerGuass':
+                        for net in [pre_qf1, pre_qf2]:
+                            hidden_layers = net.hidden_layers
+                            for l in hidden_layers:
+                                weight_mean, weight_std = l.weight.mean().item(), l.weight.std().item()
+                                bias_mean, bias_std = l.bias.mean().item(), l.bias.std().item()
+                                torch.nn.init.normal_(l.weight, weight_mean, weight_std)
+                                torch.nn.init.normal_(l.bias, bias_mean, bias_std)
+                    elif variant['init_scheme'] == 'modelGuass':
+                        for net in [pre_qf1, pre_qf2]:
+                            hidden_layers = net.hidden_layers
+                            weights = torch.cat([l.weight.flatten() for l in hidden_layers])
+                            biases = torch.cat([l.bias.flatten() for l in hidden_layers])
+                            weight_mean, weight_std = weights.mean().item(), weights.std().item()
+                            bias_mean, bias_std = biases.mean().item(), biases.std().item()
+                            for l in hidden_layers:
+                                torch.nn.init.normal_(l.weight, weight_mean, weight_std)
+                                torch.nn.init.normal_(l.bias, bias_mean, bias_std)
+                    elif variant['init_scheme'] == 'wholeGuass':
+                        for net in [pre_qf1, pre_qf2]:
+                            hidden_layers = net.hidden_layers
+                            params = torch.cat([p.flatten() for p in hidden_layers.parameters()])
+                            param_mean, param_std = params.mean().item(), params.std().item()
+                            for p in hidden_layers.parameters():
+                                torch.nn.init.normal_(p, param_mean, param_std)
+
+                    print('Initialized model parameters according to customized schemes!')
+
+                agent.qf1.load_state_dict(pretrained_agent.qf1.state_dict())
+                agent.qf2.load_state_dict(pretrained_agent.qf2.state_dict())
+                loaded = True
+                print("Pretrained model loaded from:", pretrain_full_path)
+
+            else:
+                print("Pretrained model does not exist:", pretrain_full_path)
+                loaded = False
 
         if not loaded:
             print("Start pretraining")
@@ -554,6 +569,7 @@ def run_single_exp(variant):
                                                      variant['mdppre_transition_temperature'],
                                                      ratio=variant['pretrain_data_ratio'],
                                                      random_start=variant['mdppre_random_start'])
+                # FIXME: This may affect e.g. sample_batch. Maybe shuffle the dataset before this line.
                 np.random.seed(0)
                 if str(variant['mdppre_policy_temperature']).startswith('sigma'):
                     num_per_cluster = variant['mdppre_n_state'] // 5
