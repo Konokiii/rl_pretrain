@@ -150,10 +150,10 @@ n_traj, max_length = 1000, 1000
 #     gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature)
 
 
-for n_state in [100]:
-    for temperature in [0.001,0.01,0.1,1,10,100]:
-        n_action = n_state
-        gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature, random_start=False)
+# for n_state in [100]:
+#     for temperature in [0.001,0.01,0.1,1,10,100]:
+#         n_action = n_state
+#         gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature, random_start=False)
 
 # for n_state in [10,1000,10000,100000]:
 #     for temperature in [1]:
@@ -165,10 +165,10 @@ for n_state in [100]:
 #         n_action = n_state
 #         gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature)
 
-# for n_state in [42]:
-#     for temperature in [1]:
-#         n_action = n_state
-#         gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature)
+for n_state in [42]:
+    for temperature in [1]:
+        n_action = n_state
+        gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature)
 
 
 # the variations:

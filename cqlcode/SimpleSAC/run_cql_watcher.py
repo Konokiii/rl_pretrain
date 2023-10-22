@@ -104,8 +104,10 @@ def get_default_variant_dict():
         mdppre_transition_temperature=1,
         mdppre_state_dim=20,
         mdppre_action_dim=20,
-        mdppre_same_as_s_and_policy=False,  # if True, then action hyper will be same as state, tt will be same as pt
+        mdppre_same_as_s_and_policy=False,  # if True, then action hyper will be same as state, tt will be same as pt.
         mdppre_random_start=False,
+        # Change this to vary the state/action dimension, only when using mdp_same_noproj in init study.
+        mdppre_auto_dim=True,
 
         hard_update_target_after_pretrain=True,  # if True, hard update target networks after pretraining stage.
     )
@@ -323,9 +325,8 @@ def run_single_exp(variant):
     if variant['mdppre_same_as_s_and_policy']:
         variant['mdppre_n_action'] = variant['mdppre_n_state']
         variant['mdppre_transition_temperature'] = variant['mdppre_policy_temperature']
-        variant['mdppre_action_dim'] = variant['mdppre_state_dim']
-    if variant['pretrain_mode'] in ['mdp_same_proj', 'mdp_same_noproj']:
-        variant['mdppre_action_dim'], variant['mdppre_state_dim'] = 'auto', 'auto'
+        if variant['mdppre_auto_dim']:
+            variant['mdppre_action_dim'] = variant['mdppre_state_dim']
 
     logger = EpochLogger(variant["outdir"], 'progress.csv', variant["exp_name"])
     logger.save_config(variant)
@@ -365,7 +366,7 @@ def run_single_exp(variant):
         pretrain_obs_dim = sampler_pretrain.env.observation_space.shape[0]
         pretrain_act_dim = sampler_pretrain.env.action_space.shape[0]
     else:  # if random mdp pretrain
-        if variant['pretrain_mode'] in ['mdp_same_proj', 'mdp_same_noproj']:
+        if variant['pretrain_mode'] in ['mdp_same_proj', 'mdp_same_noproj'] and variant['mdppre_auto_dim']:
             variant['mdppre_state_dim'] = eval_sampler.env.observation_space.shape[0]
             variant['mdppre_action_dim'] = eval_sampler.env.action_space.shape[0]
         pretrain_obs_dim = variant['mdppre_state_dim']
@@ -399,6 +400,19 @@ def run_single_exp(variant):
             eval_sampler.env.action_space.shape[0],
             pretrain_obs_dim,
             pretrain_act_dim,
+            arch=qf_arch,
+            orthogonal_init=variant['orthogonal_init'],
+        )
+    elif not variant['mdppre_auto_dim']:
+        qf1 = FullyConnectedQFunctionPretrain(
+            variant['mdppre_state_dim'],
+            variant['mdppre_action_dim'],
+            arch=qf_arch,
+            orthogonal_init=variant['orthogonal_init'],
+        )
+        qf2 = FullyConnectedQFunctionPretrain(
+            variant['mdppre_state_dim'],
+            variant['mdppre_action_dim'],
             arch=qf_arch,
             orthogonal_init=variant['orthogonal_init'],
         )
@@ -467,7 +481,7 @@ def run_single_exp(variant):
                 else:
                     dataset_name_string = '%d_preR%s' % (variant['mdppre_n_traj'], str(variant['pretrain_data_ratio']))
                 pretrain_model_name = '%s_%s_preTraj%s_nS%d_nA%d_pt%s_tt%s_dimS%d_dimA%d_initS%s_preM%s_l%d_hs%d_preUps' \
-                                      '%s_preEp%s.pth' % ('cql', variant['env'],
+                                      '%s_preEp%s.pth' % ('cql', variant['env'] if variant['mdppre_auto_dim'] else 'customized',
                                                           # downstream task env is needed here because pretrain projection will be different for each task
                                                           dataset_name_string, variant['mdppre_n_state'],
                                                           variant['mdppre_n_action'],
