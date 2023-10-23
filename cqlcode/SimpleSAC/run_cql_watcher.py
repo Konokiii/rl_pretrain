@@ -75,7 +75,7 @@ def get_default_variant_dict():
 
         n_epochs=200,
         bc_epochs=0,
-        n_pretrain_epochs=200,
+        n_pretrain_epochs=20,
         # q_sprime, proj0_q_sprime, proj1_q_sprime, proj2_q_sprime
         # 'mdp_same_proj', 'mdp_same_noproj', q_sprime_3x, proj0_q_sprime_3x, proj1_q_sprime_3x, q_noact_sprime
         pretrain_mode='none',
