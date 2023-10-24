@@ -23,24 +23,21 @@ def load_model(pretrain_model_name):
             print('Saved state_dict of Q functions to send back.')
         else:
             print('Pretrained Q functions are already saved.')
+    else:
+        print('Model does not exist!')
 
 
 PRETRAINED_MODEL_FOLDER = './'
 MODEL_SAVE_FOLDER = './pretrainedQNets/'
 
 pretrained_models_names = [
-    ant_iid_l2,
-    hopper_iid_l2,
-    halfcheetah_iid_l2,
-    walker_iid_l2,
-
-    ant_random_l2,
-    hopper_random_l2,
-    halfcheetah_random_l2,
-    walker_random_l2
+    ant_mle_l2,
+    hopper_mle_l2,
+    halfcheetah_mle_l2,
+    walker_mle_l2
 ]
 
-pretrained_models_names.extend(list(abl_dimension.values()))
+pretrained_models_names.extend(list(same_data.values()))
 
 for name in pretrained_models_names:
     load_model(name)

@@ -77,8 +77,8 @@ def load_layers(model_name):
 
 
 # Load statistics to a 2D numpy array to plot.
-def prepare_values(env, measures):
-    W_list, bias_list = load_layers(env)
+def prepare_values(model_name, measures):
+    W_list, bias_list = load_layers(model_name)
     column_len = len(W_list)
     row_len_W = len(measures)
     measures_b = [m for m in measures if m in STATS_AVAILABLE_FOR_BIAS]
@@ -102,10 +102,10 @@ def prepare_values(env, measures):
 
 
 # Generate latex table.
-def generate_table(stats_names, stats, column_names, env_list):
+def generate_table(stats_names, stats, column_names, model_list):
     table_Ws, table_bs = [], []
-    for env in env_list:
-        table1, table2 = prepare_values(env, stats)
+    for model in model_list:
+        table1, table2 = prepare_values(model, stats)
         table_Ws.append(table1)
         table_bs.append(table2)
 
@@ -113,15 +113,15 @@ def generate_table(stats_names, stats, column_names, env_list):
     print('\hline')
     column_names = [''] + column_names
     for i, measure in enumerate(stats):
-        column_names[0] = '\\textbf{%s}' % stats_names[i]
+        column_names[0] = '\\textbf{%s}' % stats_names
         col_name_line = ''
         for col in column_names:
             col_name_line += str(col) + ' & '
         col_name_line = col_name_line[:-2] + '\\\\'
         print(col_name_line)
         print("		\\hline ")
-        for e, env in enumerate(env_list):
-            row_string = env + '\\emph{(Weight)}' if e == 0 else env
+        for e, model in enumerate(model_list):
+            row_string = model + '\\emph{(Weight)}' if e == 0 else model
             for j in range(len(column_names) - 1):
                 mean = table_Ws[e][i, j]
                 row_string += (' & %.3f ' % mean)
@@ -131,8 +131,8 @@ def generate_table(stats_names, stats, column_names, env_list):
         print('\\hdashline')
 
         if measure in STATS_AVAILABLE_FOR_BIAS:
-            for e, env in enumerate(env_list):
-                row_string = env + '\\emph{(Bias)}' if e == 0 else env
+            for e, model in enumerate(model_list):
+                row_string = model + '\\emph{(Bias)}' if e == 0 else model
                 for j in range(len(column_names) - 1):
                     mean = table_bs[e][i, j]
                     row_string += (' & %.3f ' % mean)
@@ -230,7 +230,7 @@ def plot_hist(model_names, legend_names, layer_names, fig_name_prefix, add_defau
         plt.savefig(FIGURE_SAVE_FOLDER + figure_name)
 
 
-env_list = [
+model_list = [
     'halfcheetah',
     'hopper',
     'walker2d',
@@ -260,10 +260,10 @@ stats_names = [
 column_names = [
     'L2_1',
     'L2_2',
-    'L3_1',
-    'L3_2',
-    'L3_3'
 ]
+
+# TODO: Why do we need to import SimpleSAC?
+# generate_table(stats_names, stats, column_names, model_list)
 
 # models = [
 #     ant_random_l2,
@@ -281,8 +281,6 @@ dimS = [3, 15, 50, 100, 300]
 dimA = [3, 15, 50, 100, 300]
 legend_list = [[f's{s}a{a}' for a in dimA] for s in dimS]
 
-# TODO: Why do we need to import SimpleSAC?
-# generate_table(stats_names, stats, column_names, env_list)
 for i, legends in enumerate(legend_list):
     models = [abl_dimension[l] for l in legends]
     plot_hist(models, legends, layer_names=['L1', 'L2'], fig_name_prefix=f'Dim_Ablation{i}', add_default=True)
