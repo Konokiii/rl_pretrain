@@ -353,7 +353,7 @@ def run_single_exp(variant):
     elif variant['pretrain_mode'] in ['proj2_q_sprime', 'proj2_q_sprime_3x']:
         pretrain_task_name = next_mujoco_env_name(variant['env'], reverse=True)
         pretrain_env_name = '%s-%s-v2' % (pretrain_task_name, variant['dataset'])
-    elif variant['pretrain_mode'] in ['mdp_q_sprime', 'mdp_same_proj', 'mdp_same_noproj']:
+    elif variant['pretrain_mode'] in ['mdp_q_sprime', 'mdp_same_proj', 'mdp_same_noproj', 'mdp_mle']:
         pretrain_env_name = None
     else:
         pretrain_env_name = env_full
@@ -366,7 +366,7 @@ def run_single_exp(variant):
         pretrain_obs_dim = sampler_pretrain.env.observation_space.shape[0]
         pretrain_act_dim = sampler_pretrain.env.action_space.shape[0]
     else:  # if random mdp pretrain
-        if variant['pretrain_mode'] in ['mdp_same_proj', 'mdp_same_noproj'] and variant['mdppre_auto_dim']:
+        if variant['pretrain_mode'] in ['mdp_same_proj', 'mdp_same_noproj', 'mdp_mle'] and variant['mdppre_auto_dim']:
             variant['mdppre_state_dim'] = eval_sampler.env.observation_space.shape[0]
             variant['mdppre_action_dim'] = eval_sampler.env.action_space.shape[0]
         pretrain_obs_dim = variant['mdppre_state_dim']
@@ -466,7 +466,7 @@ def run_single_exp(variant):
             print('Initialized the Q nets with statistics directly.')
         else:
             pretrain_model_folder_path = '/cqlcode/pretrained_cql_models/'
-            if variant['pretrain_mode'] not in ['mdp_q_sprime', 'mdp_same_proj', 'mdp_same_noproj']:
+            if variant['pretrain_mode'] not in ['mdp_q_sprime', 'mdp_same_proj', 'mdp_same_noproj', 'mdp_mle']:
                 if variant['pretrain_data_ratio'] == 1:
                     dataset_name_string = variant['dataset']
                 else:

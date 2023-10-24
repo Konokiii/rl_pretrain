@@ -23,9 +23,9 @@ def get_other_score_measures(path):
     return d
 
 
-base_path = '../code/checkpoints/postICLR 2'
+base_path = '../code/checkpoints/crudeinit'
 for root, dirs, files in os.walk(base_path):
-    if '/postICLR' in root:
+    if '/Init' in root:
         for dir in dirs:
             # Go through every subfolder in this folder
                 subfolder = os.path.join(root, dir)

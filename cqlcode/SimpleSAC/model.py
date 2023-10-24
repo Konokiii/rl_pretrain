@@ -230,12 +230,15 @@ class FullyConnectedQFunctionPretrain(nn.Module):
         if orthogonal_init:
             nn.init.orthogonal_(self.hidden_to_next_obs.weight, gain=1e-2)
             nn.init.orthogonal_(self.hidden_to_value.weight, gain=1e-2)
+            nn.init.orthogonal_(self.hidden_to_dist.weight, gain=1e-2)
         else:
             nn.init.xavier_uniform_(self.hidden_to_next_obs.weight, gain=1e-2)
             nn.init.xavier_uniform_(self.hidden_to_value.weight, gain=1e-2)
+            nn.init.xavier_uniform_(self.hidden_to_dist.weight, gain=1e-2)
 
         nn.init.constant_(self.hidden_to_next_obs.bias, 0.0)
         nn.init.constant_(self.hidden_to_value.bias, 0.0)
+        nn.init.constant_(self.hidden_to_dist.bias, 0.0)
 
     def get_feature(self, observations, actions):
         h = torch.cat([observations, actions], dim=-1)

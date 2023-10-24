@@ -17,6 +17,7 @@ def load_model(pretrain_model_name):
         pre_qf1 = pretrained_agent.qf1
         pre_qf2 = pretrained_agent.qf2
         sendback_path = os.path.join(MODEL_SAVE_FOLDER, pretrain_model_name)
+        print(sendback_path)
         if not os.path.exists(sendback_path):
             torch.save({'qf1': pre_qf1, 'qf2': pre_qf2}, sendback_path)
             print('Saved state_dict of Q functions to send back.')
@@ -26,6 +27,7 @@ def load_model(pretrain_model_name):
 
 PRETRAINED_MODEL_FOLDER = './'
 MODEL_SAVE_FOLDER = './pretrainedQNets/'
+
 pretrained_models_names = [
     ant_iid_l2,
     hopper_iid_l2,

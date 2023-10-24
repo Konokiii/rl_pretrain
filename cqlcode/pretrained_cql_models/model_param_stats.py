@@ -5,8 +5,10 @@ import torch.nn as nn
 import numpy as np
 import math
 import sys
+sys.path.append('../')
+import SimpleSAC
 import matplotlib.pyplot as plt
-import model_alias
+from model_alias import *
 
 
 PRETRAINED_MODEL_FOLDER = './'
@@ -30,39 +32,6 @@ STATS_AVAILABLE_FOR_BIAS = [
     'min',
     'norm',
     'avgNorm'
-]
-
-env_list = [
-    'halfcheetah',
-    'hopper',
-    'walker2d',
-    'ant'
-]
-
-# Pick some from STATS_AVAILABLE
-stats = [
-    'mean',
-    'std',
-    'max',
-    'min',
-    'norm',
-]
-
-# Order of the stats_names should match stats
-stats_names = [
-    'Mean',
-    'Std',
-    'Max',
-    'Min',
-    'Norm',
-]
-
-column_names = [
-    'L1',
-    'L2',
-    'L1',
-    'L2',
-    'L3'
 ]
 
 
@@ -89,19 +58,18 @@ def compute_statistic(value_mat, measures):
     return stats_dict
 
 
-def load_layers(env):
-    # TODO Check isfile or not:
-    two_models = [name for name in os.listdir(MODEL_SAVE_FOLDER) if env in name]
-    model_l2_name = [name for name in two_models if 'l2' in name][0]
-    model_l3_name = [name for name in two_models if 'l3' in name][0]
-    model_l2 = torch.load(os.path.join(MODEL_SAVE_FOLDER, model_l2_name))
-    model_l3 = torch.load(os.path.join(MODEL_SAVE_FOLDER, model_l3_name))
+def load_layers(model_name):
+    model_path = os.path.join(MODEL_SAVE_FOLDER, model_name)
+    if os.path.exists(model_path):
+        model = torch.load(model_path)
+    else:
+        print('Path Not Found: ', model_path)
+        return
 
     # Load qf1 only for now:
-    model_l2_qf1 = model_l2['qf1']
-    model_l3_qf1 = model_l3['qf1']
+    qf1 = model['qf1']
 
-    layers = list(model_l2_qf1.hidden_layers) + list(model_l3_qf1.hidden_layers)
+    layers = list(qf1.hidden_layers)
     W_list = [l.weight for l in layers]
     bias_list = [l.bias for l in layers]
 
@@ -218,31 +186,32 @@ def round_down(num, n_decimal):
     return math.floor(num * 10 ** n_decimal) / 10 ** n_decimal
 
 
-def plot_hist(environments, layer_names):
+def plot_hist(model_names, legend_names, layer_names, fig_name_prefix, add_default=False):
     all_W = []
     all_bias = []
-    for env in environments:
-        W_list, b_list = load_layers(env)
+    for name in model_names:
+        W_list, b_list = load_layers(name)
         all_W.append(W_list)
         all_bias.append(b_list)
 
     for j in range(len(layer_names)):
-        W_to_plot = [all_W[i][j].flatten().detach().numpy() for i in range(len(environments))]
-        bias_to_plot = [all_bias[i][j].flatten().detach().numpy() for i in range(len(environments))]
+        W_to_plot = [all_W[i][j].flatten().detach().numpy() for i in range(len(model_names))]
+        bias_to_plot = [all_bias[i][j].flatten().detach().numpy() for i in range(len(model_names))]
 
         # Add default init weight and bias:
-        # TODO: Currently only do default init for one input dimension(env); extend this later on.
-        fan_in = len(W_to_plot[0]) / 256
-        default_init_layer = nn.Linear(int(fan_in), 256)
-        W_to_plot.append(default_init_layer.weight.flatten().detach().numpy())
-        bias_to_plot.append(default_init_layer.bias.flatten().detach().numpy())
+        if add_default:
+            # TODO: Currently only do default init for one input dimension(walker2d); extend this later on.
+            fan_in = 23
+            default_init_layer = nn.Linear(int(fan_in), 256)
+            W_to_plot.append(default_init_layer.weight.flatten().detach().numpy())
+            bias_to_plot.append(default_init_layer.bias.flatten().detach().numpy())
 
         n_bins = 15
         fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
-        colors = ['red', 'blue', 'darkorange', 'magenta', 'lime']
+        colors = ['red', 'blue', 'darkorange', 'lime', 'magenta', 'pink']
         colors = colors[:len(W_to_plot)]
-        legend = environments + ['default']
+        legend = legend_names + ['default']
         ax0.hist(W_to_plot, bins=n_bins, density=True, histtype='bar', color=colors, label=legend)
         ax0.legend(prop={'size': 15})
         ax0.set_title('Weight Matrices')
@@ -256,8 +225,36 @@ def plot_hist(environments, layer_names):
 
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
-        plt.suptitle(column_names[j])
-        plt.savefig(FIGURE_SAVE_FOLDER + layer_names[j])
+        figure_name = f'{fig_name_prefix}_{layer_names[j]}'
+        plt.suptitle(figure_name)
+        plt.savefig(FIGURE_SAVE_FOLDER + figure_name)
+
+
+env_list = [
+    'halfcheetah',
+    'hopper',
+    'walker2d',
+    'ant',
+    'customized'
+]
+
+# Pick some from STATS_AVAILABLE
+stats = [
+    'mean',
+    'std',
+    'max',
+    'min',
+    'norm',
+]
+
+# Order of the stats_names should match stats
+stats_names = [
+    'Mean',
+    'Std',
+    'Max',
+    'Min',
+    'Norm',
+]
 
 
 column_names = [
@@ -267,4 +264,25 @@ column_names = [
     'L3_2',
     'L3_3'
 ]
-plot_hist(env_list, column_names)
+
+# models = [
+#     ant_random_l2,
+#     hopper_random_l2,
+#     halfcheetah_random_l2,
+#     walker_random_l2
+# ]
+# legends = [
+#     'ant',
+#     'hopper',
+#     'halfcheetah',
+#     'walker2d'
+# ]
+dimS = [3, 15, 50, 100, 300]
+dimA = [3, 15, 50, 100, 300]
+legend_list = [[f's{s}a{a}' for a in dimA] for s in dimS]
+
+# TODO: Why do we need to import SimpleSAC?
+# generate_table(stats_names, stats, column_names, env_list)
+for i, legends in enumerate(legend_list):
+    models = [abl_dimension[l] for l in legends]
+    plot_hist(models, legends, layer_names=['L1', 'L2'], fig_name_prefix=f'Dim_Ablation{i}', add_default=True)

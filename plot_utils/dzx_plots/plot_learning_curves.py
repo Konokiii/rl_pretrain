@@ -474,26 +474,23 @@ def plot_dt_loss_curves():
 # ]
 
 labels = [
-    'CQL_l2',
-    'CQL_l3',
-    'MDP_l2',
-    'MDP_l3'
+    'CQL',
+    'MDP',
+    'Crude_Init',
+    'Fine_Init'
 ]
 
 base_names = [
-    cql_best_l2,
-    cql_best_l3,
-    mdp_best_l2,
-    mdp_best_l3
+    iclr_cql,
+    iclr_cql_mdp_t1,
+    cql_crude_init,
+    cql_init_layerG
 ]
 
-# 4. non safe q and cql lr ablation
-# 5. non safe q and mdp lr ablation
-# 6. best tuning 
-data_path = '../../code/checkpoints/postICLR'
+data_path = '../../code/checkpoints/sendbackcql'
 save_path = '../../figures/'
 plot_cql_performance_curves(labels, base_names)
-plot_cql_q_loss_curves(labels, base_names)
+# plot_cql_q_loss_curves(labels, base_names)
 # plot_cql_combined_loss_curves(labels, base_names)
 # plot_dt_performance_curves()
 # plot_dt_loss_curves()
