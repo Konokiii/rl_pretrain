@@ -37,8 +37,8 @@ def main():
     exp_prefix = 'cql'
     settings = [
         'env', '', ANTMAZE_3_ENVS,
-        'dataset', '', ['diverse'],#ANTMAZE_2_DATASET,
-        'do_pretrain_only', 'dpo', [True],
+        'dataset', '', ANTMAZE_2_DATASETS,
+        # 'do_pretrain_only', 'dpo', [True],
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
         'qf_hidden_layer', 'l', [3],
         'mdppre_n_state', 'ns', [100],
@@ -48,7 +48,7 @@ def main():
         'n_pretrain_epochs', 'preEp', [20],
         'use_safe_q', 'safeQ', [False],
         'cql_lagrange', 'lag', [True, False],
-        'seed', '', [0]#list(range(5))
+        'seed', '', list(range(5))
     ]
 
     indexes, actual_setting, total, hyper2logname = get_setting_dt(settings, setting)

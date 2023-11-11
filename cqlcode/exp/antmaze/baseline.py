@@ -37,7 +37,7 @@ def main():
     exp_prefix = 'cql'
     settings = [
         'env', '', ANTMAZE_3_ENVS,
-        'dataset', '', ANTMAZE_2_DATASET,
+        'dataset', '', ANTMAZE_2_DATASETS,
         'pretrain_mode', 'pre', ['none'],  # 'none', 'q_sprime', 'mdp_q_sprime'
         'qf_hidden_layer', 'l', [3],
         'use_safe_q', 'safeQ', [False],
