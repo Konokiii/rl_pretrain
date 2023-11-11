@@ -22,6 +22,8 @@ MUJOCO_12 = ['halfcheetah-medium-v2', 'halfcheetah-medium-replay-v2', 'halfcheet
             'walker2d-medium-v2', 'walker2d-medium-replay-v2', 'walker2d-medium-expert-v2',
             'hopper-medium-v2', 'hopper-medium-replay-v2', 'hopper-medium-expert-v2', 'ant-medium-v2',
              'ant-medium-replay-v2', 'ant-medium-expert-v2']
+ANTMAZE_3_ENVS = ['antmaze-umaze', 'antmaze-medium', 'antmaze-large']
+ANTMAZE_2_DATASETS = ['play', 'diverse']
 
 def setup_logger_kwargs_dt(exp_name, seed=None, data_dir=None, datestamp=False):
     # Datestamp forcing

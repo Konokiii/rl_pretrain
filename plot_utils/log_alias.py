@@ -470,6 +470,7 @@ mdp_best_l3 = 'postICLR_best_cqlr3n_premdp_same_noproj_l3_ep200_safeQFalse_ns100
 
 # 2023/10/19:
 cql_crude_init = 'Init_cqlr3n_premdp_same_noproj_l2_initcrude_init'
+cql_mdp_mle = 'Init_cqlr3n_premdp_mle_l2_ns100_pt1_sameTrue_preUps5000_preEp20'
 
 
 

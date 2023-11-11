@@ -338,6 +338,8 @@ def run_single_exp(variant):
     ready_agent = None
 
     env_full = '%s-%s-v2' % (variant['env'], variant['dataset'])
+    if variant['env'] == 'antmaze-umaze' and variant['dataset'] == 'play':
+        env_full = 'antmaze-umaze-v2'
 
     def next_mujoco_env_name(env_name, reverse=False):
         envs = ['hopper', 'walker2d', 'halfcheetah']
@@ -802,25 +804,6 @@ def run_single_exp(variant):
                 logger.log_tabular(m, 0)
             else:
                 logger.log_tabular(m, viskit_metrics[m])
-
-        # feature_diff_last_iter, feature_sim_last_iter, _ = get_feature_diff(agent, prev_agent, dataset, variant['device'], ratio=0.005)
-        weight_diff_last_iter, weight_sim_last_iter, wd0_li, ws0_li, wd1_li, ws1_li, wdfc_li, wsfc_li = get_weight_diff(
-            agent, prev_agent)
-
-        # additional_dict_with_list['feature_diff_last_iter'].append(feature_diff_last_iter)
-        # additional_dict_with_list['feature_sim_last_iter'].append(feature_sim_last_iter)
-        #
-        # additional_dict_with_list['weight_diff_last_iter'].append(weight_diff_last_iter)
-        # additional_dict_with_list['weight_sim_last_iter'].append(weight_sim_last_iter)
-        # additional_dict_with_list['wd0_li'].append(wd0_li)
-        # additional_dict_with_list['ws0_li'].append(ws0_li)
-        # additional_dict_with_list['wd1_li'].append(wd1_li)
-        # additional_dict_with_list['ws1_li'].append(ws1_li)
-        # additional_dict_with_list['wdfc_li'].append(wdfc_li)
-        # additional_dict_with_list['wsfc_li'].append(wsfc_li)
-        #
-        # for key in additional_dict_with_list:
-        #     logger.log_tabular(key, additional_dict_with_list[key][-1])
 
         logger.log_tabular("total_time", time.time() - st)
         logger.log_tabular("train_time", viskit_metrics["train_time"])

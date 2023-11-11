@@ -5,11 +5,10 @@ import torch.nn as nn
 import numpy as np
 import math
 import sys
+
 sys.path.append('../')
-import SimpleSAC
 import matplotlib.pyplot as plt
 from model_alias import *
-
 
 PRETRAINED_MODEL_FOLDER = './'
 MODEL_SAVE_FOLDER = './pretrainedQNets/'
@@ -179,14 +178,15 @@ def generate_table(stats_names, stats, column_names, model_list):
 
 # ################################### Plot Figure #######################################
 def round_up(num, n_decimal):
-    return math.ceil(num*10**n_decimal) / 10**n_decimal
+    return math.ceil(num * 10 ** n_decimal) / 10 ** n_decimal
 
 
 def round_down(num, n_decimal):
     return math.floor(num * 10 ** n_decimal) / 10 ** n_decimal
 
 
-def plot_hist(model_names, legend_names, layer_names, fig_name_prefix, add_default=False):
+def plot_hist(model_names, legend_names, layer_names, fig_name_prefix, add_default=None, n_bins=10, xrange=None,
+              adjust_xticks=False):
     all_W = []
     all_bias = []
     for name in model_names:
@@ -200,28 +200,37 @@ def plot_hist(model_names, legend_names, layer_names, fig_name_prefix, add_defau
 
         # Add default init weight and bias:
         if add_default:
-            # TODO: Currently only do default init for one input dimension(walker2d); extend this later on.
-            fan_in = 23
-            default_init_layer = nn.Linear(int(fan_in), 256)
+            if j == 0:
+                if add_default in ['halfcheetah', 'walker2d']:
+                    fan_in = 23
+                elif add_default == 'hopper':
+                    fan_in = 14
+                elif add_default == 'ant':
+                    fan_in = 119
+            else:
+                fan_in = 256
+            default_init_layer = nn.Linear(fan_in, 256)
             W_to_plot.append(default_init_layer.weight.flatten().detach().numpy())
             bias_to_plot.append(default_init_layer.bias.flatten().detach().numpy())
 
-        n_bins = 15
         fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
 
         colors = ['red', 'blue', 'darkorange', 'lime', 'magenta', 'pink']
+        # TODO: Check length
         colors = colors[:len(W_to_plot)]
-        legend = legend_names + ['default']
-        ax0.hist(W_to_plot, bins=n_bins, density=True, histtype='bar', color=colors, label=legend)
+        legend = legend_names + ['default(%s)' % add_default]
+        ax0.hist(W_to_plot, bins=n_bins, range=xrange, density=True, histtype='bar', color=colors, label=legend)
         ax0.legend(prop={'size': 15})
         ax0.set_title('Weight Matrices')
-        start, end = ax0.get_xlim()
-        ax0.xaxis.set_ticks(np.arange(round_down(start, 1), round_up(end, 1), 0.1))
 
-        ax1.hist(bias_to_plot, bins=n_bins, density=True, histtype='bar', color=colors)
+        ax1.hist(bias_to_plot, bins=n_bins, range=xrange, density=True, histtype='bar', color=colors)
         ax1.set_title('Bias Matrices')
-        start, end = ax1.get_xlim()
-        ax1.xaxis.set_ticks(np.arange(round_down(start, 1), round_up(end, 1), 0.05))
+
+        if adjust_xticks:
+            start, end = ax0.get_xlim()
+            ax0.xaxis.set_ticks(np.arange(round_down(start, 1), round_up(end, 1), 0.1))
+            start, end = ax1.get_xlim()
+            ax1.xaxis.set_ticks(np.arange(round_down(start, 1), round_up(end, 1), 0.05))
 
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
@@ -231,11 +240,7 @@ def plot_hist(model_names, legend_names, layer_names, fig_name_prefix, add_defau
 
 
 model_list = [
-    'halfcheetah',
-    'hopper',
-    'walker2d',
-    'ant',
-    'customized'
+    ant_l2
 ]
 
 # Pick some from STATS_AVAILABLE
@@ -256,31 +261,39 @@ stats_names = [
     'Norm',
 ]
 
-
 column_names = [
     'L2_1',
     'L2_2',
 ]
 
-# TODO: Why do we need to import SimpleSAC?
+# FixMe: Why do we need to import SimpleSAC (sys.path.append('../'))?
 # generate_table(stats_names, stats, column_names, model_list)
 
 # models = [
-#     ant_random_l2,
-#     hopper_random_l2,
-#     halfcheetah_random_l2,
-#     walker_random_l2
+#     same_data['hopper_medium-expert']
+#
+#
 # ]
 # legends = [
-#     'ant',
-#     'hopper',
-#     'halfcheetah',
-#     'walker2d'
+#     'hopper_m-exp',
 # ]
-dimS = [3, 15, 50, 100, 300]
-dimA = [3, 15, 50, 100, 300]
-legend_list = [[f's{s}a{a}' for a in dimA] for s in dimS]
+# plot_hist(models, legends, layer_names=['L1', 'L2'], fig_name_prefix=f'Hopper_Single',
+#           add_default='hopper', n_bins=15, xrange=None, adjust_xticks=False)
 
-for i, legends in enumerate(legend_list):
-    models = [abl_dimension[l] for l in legends]
-    plot_hist(models, legends, layer_names=['L1', 'L2'], fig_name_prefix=f'Dim_Ablation{i}', add_default=True)
+# Dimension Ablation Study:
+# legend_list = [[f's{s}a{a}' for a in [3, 15, 50, 100, 300]] for s in [300]]
+# for i, legends in enumerate(legend_list):
+#     models = [abl_dimension[l] for l in legends]
+#     plot_hist(models, legends, layer_names=['L1', 'L2'], fig_name_prefix=f'Single_Dim_Ablation{i}',
+#               add_default=None, n_bins='auto', xrange=None, adjust_xticks=False)
+
+# Self-pretraining histogram:
+# env = ['ant','hopper','halfcheetah','walker2d']
+# dataset = ['medium', 'medium-expert', 'medium-replay']
+# key_list = [[f'{e}_{d}' for d in dataset] for e in env]
+# legend_list = [[f'{e}_{d}' for d in ['m','m-exp','m-rep']] for e in env]
+#
+# for i, keys in enumerate(key_list):
+#     models = [same_data[l] for l in keys]
+#     plot_hist(models, legend_list[i], layer_names=['L1', 'L2'], fig_name_prefix=f'Same_Data_{env[i]}',
+#               add_default=env[i], n_bins=15, xrange=(-0.1, 0.1), adjust_xticks=False)

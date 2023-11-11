@@ -23,7 +23,7 @@ def get_other_score_measures(path):
     return d
 
 
-base_path = '../code/checkpoints/crudeinit'
+base_path = '../code/checkpoints/mdp_mle'
 for root, dirs, files in os.walk(base_path):
     if '/Init' in root:
         for dir in dirs:

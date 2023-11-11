@@ -475,16 +475,14 @@ def plot_dt_loss_curves():
 
 labels = [
     'CQL',
-    'MDP',
-    'Crude_Init',
-    'Fine_Init'
+    'MDP_MSE',
+    'MDP_MLE'
 ]
 
 base_names = [
     iclr_cql,
     iclr_cql_mdp_t1,
-    cql_crude_init,
-    cql_init_layerG
+    cql_mdp_mle
 ]
 
 data_path = '../../code/checkpoints/sendbackcql'

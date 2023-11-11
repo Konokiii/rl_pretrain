@@ -21,10 +21,10 @@ walker_random_l2 = 'cql_walker2d_preTraj1000_nS42_nA42_pt1_tt1_dimS17_dimA6_init
 abl_dimension = {f's{s}a{a}':f'cql_customized_preTraj1000_nS100_nA100_pt1_tt1_dimS{s}_dimA{a}_initSFalse_preMmdp_same_noproj_l2_hs256_preUps5000_preEp20.pth' \
                  for a in [3, 15, 50, 100, 300] for s in [3, 15, 50, 100, 300]}
 
-ant_mle_l2 = 'cql_ant_preTraj1000_nS100_nA100_pt1_tt1_dimS111_dimA8_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
-hopper_mle_l2 = 'cql_hopper_preTraj1000_nS100_nA100_pt1_tt1_dimS11_dimA3_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
-halfcheetah_mle_l2 = 'cql_halfcheetah_preTraj1000_nS100_nA100_pt1_tt1_dimS17_dimA6_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
-walker_mle_l2 = 'cql_walker2d_preTraj1000_nS100_nA100_pt1_tt1_dimS17_dimA6_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
+ant_mle_l2 = 'cql_ant_preTraj1000_nS100_nA100_pt1_tt1_dimS111_dimA8_initSFalse_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
+hopper_mle_l2 = 'cql_hopper_preTraj1000_nS100_nA100_pt1_tt1_dimS11_dimA3_initSFalse_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
+halfcheetah_mle_l2 = 'cql_halfcheetah_preTraj1000_nS100_nA100_pt1_tt1_dimS17_dimA6_initSFalse_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
+walker_mle_l2 = 'cql_walker2d_preTraj1000_nS100_nA100_pt1_tt1_dimS17_dimA6_initSFalse_preMmdp_mle_l2_hs256_preUps5000_preEp20.pth'
 
 same_data = {f'{env}_{data}': f'cql_{env}_{data}_preMq_sprime_l2_hs256_preUps5000_preEp20.pth' \
              for data in ['medium', 'medium-expert', 'medium-replay'] for env in ['ant', 'hopper', 'halfcheetah', 'walker2d']}
