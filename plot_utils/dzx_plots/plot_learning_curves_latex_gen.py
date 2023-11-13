@@ -82,11 +82,18 @@ for e in MUJOCO_4_ENVS_captions:
     for d in MUJOCO_3_DATASETS_captions:
         d4rl_12_datasets_envs_captions.append('%s %s' % (e, d))
 
+ANTMAZE_3_ENVS = ['antmaze-umaze', 'antmaze-medium', 'antmaze-large']
+ANTMAZE_2_DATASETS = ['play', 'diverse']
+d4rl_6_antmaze_datasets = []
+for e in ANTMAZE_3_ENVS:
+    for d in ANTMAZE_2_DATASETS:
+        d4rl_6_antmaze_datasets.append('%s_%s' % (e, d))
 
 def gen_cql_curves():
-    figure_folder= 'dzx_figures/cql_crude_init'
+    figure_folder= 'dzx_figures/cql_antmaze'
     figure_names = []
-    subfigure_captions = d4rl_12_datasets_envs_captions
+    subfigure_captions = d4rl_6_antmaze_datasets
+    all_envs = d4rl_6_antmaze_datasets
 
     # performance-aggregated
     print("\\begin{figure}[htb]")
@@ -98,7 +105,7 @@ def gen_cql_curves():
     print()
 
     # performance-individual
-    for e in d4rl_12_datasets_envs:
+    for e in all_envs:
         figure_names.append('ind-cql_TestEpNormRet_%s.png' % e)
 
     caption = 'Learning curves for CQL, CQL with same task RL data pretraining, and CQL with MDP pretraining.'
@@ -137,7 +144,7 @@ def gen_cql_curves():
 
     # performance-individual
     figure_names = []
-    for e in d4rl_12_datasets_envs:
+    for e in all_envs:
         figure_names.append('ind-cql_sac_combined_loss_%s.png' % e)
 
     caption = 'Combined loss (Q loss and conservative loss) for CQL, CQL with same task RL data pretraining, and CQL with MDP pretraining.'

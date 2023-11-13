@@ -23,9 +23,9 @@ def get_other_score_measures(path):
     return d
 
 
-base_path = '../code/checkpoints/mdp_mle'
+base_path = '../code/checkpoints/antmaze'
 for root, dirs, files in os.walk(base_path):
-    if '/Init' in root:
+    if '/cql' in root:
         for dir in dirs:
             # Go through every subfolder in this folder
                 subfolder = os.path.join(root, dir)

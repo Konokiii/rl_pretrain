@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --verbose
-#SBATCH --time=48:00:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --exclude=gm[001-025]
 #SBATCH --mem=8GB

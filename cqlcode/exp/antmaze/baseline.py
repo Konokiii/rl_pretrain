@@ -34,7 +34,7 @@ def main():
 
     variant = get_default_variant_dict() # this is a dictionary
     ###########################################################
-    exp_prefix = 'cql'
+    exp_prefix = 'cql_tuned'
     settings = [
         'env', '', ANTMAZE_3_ENVS,
         'dataset', '', ANTMAZE_2_DATASETS,
@@ -62,9 +62,11 @@ def main():
     variant["outdir"] = logger_kwargs["output_dir"]
     variant["exp_name"] = logger_kwargs["exp_name"]
     # TODO for now we set this to 3 for faster experiments
+    variant['policy_hidden_layer'] = variant['qf_hidden_layer']
     variant['cql'].cql_n_actions = 3
+    variant['cql'].policy_lr = 1e-4
     variant['cql'].cql_min_q_weight = 5.0
-    variant['cql'].cql_target_action_gap = 0.8
+    variant['cql'].cql_target_action_gap = 5.0
     run_single_exp(variant)
 
 

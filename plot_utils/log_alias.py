@@ -472,6 +472,14 @@ mdp_best_l3 = 'postICLR_best_cqlr3n_premdp_same_noproj_l3_ep200_safeQFalse_ns100
 cql_crude_init = 'Init_cqlr3n_premdp_same_noproj_l2_initcrude_init'
 cql_mdp_mle = 'Init_cqlr3n_premdp_mle_l2_ns100_pt1_sameTrue_preUps5000_preEp20'
 
+# 2023/11/12: Antmaze
+cql_antmaze_l3 = 'cql_prenone_l3_safeQFalse_lagFalse'
+cql_antmaze_l3_lag = 'cql_prenone_l3_safeQFalse_lagTrue'
+cql_antmaze_mdp_l3 = 'cql_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagFalse'
+cql_antmaze_mdp_l3_lag = 'cql_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagTrue'
+cql_antmaze_same_l3 = 'cql_preq_sprime_l3_safeQFalse_lagFalse'
+cql_antmaze_same_l3_lag = 'cql_preq_sprime_l3_safeQFalse_lagTrue'
+
 
 
 

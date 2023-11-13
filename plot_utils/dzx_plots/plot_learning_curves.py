@@ -32,6 +32,13 @@ for e in MUJOCO_4_ENVS:
     for d in MUJOCO_3_DATASETS:
         d4rl_12_datasets_envs.append('%s_%s' % (e, d))
 
+ANTMAZE_3_ENVS = ['antmaze-umaze', 'antmaze-medium', 'antmaze-large']
+ANTMAZE_2_DATASETS = ['play', 'diverse']
+d4rl_6_antmaze_datasets = []
+for e in ANTMAZE_3_ENVS:
+    for d in ANTMAZE_2_DATASETS:
+        d4rl_6_antmaze_datasets.append('%s_%s' % (e, d))
+
 d4rl_q_loss_maxs = [60, 60, 60, 120, 120, 120, 175, 175, 175, 200, 200, 200]
 d4rl_combined_loss_maxs = [None for _ in range(12)]
 d4rl_combined_loss_mins = [None for _ in range(12)]
@@ -68,25 +75,15 @@ font_size = 10
 
 
 def plot_cql_performance_curves(labels, base_names):
-    # labels = [
-    #     'CQL',
-    #     'CQL same data',
-    #     'CQL MDP',
-    # ]
-    # base_names = [
-    #     cql_jul,
-    #     cql_jul_fd_pretrain,
-    #     cql_jul_mdp_noproj_s100_t1,
-    #     ]
-
     y = d4rl_test_performance_col_name
+    all_envs = d4rl_6_antmaze_datasets
     ymax = None
 
     # aggregate
     aggregate_name = 'agg-cql'
     quick_plot_with_full_name(  # labels, folder name prefix, envs
         labels,
-        get_full_names_with_envs(base_names, d4rl_12_datasets_envs),
+        get_full_names_with_envs(base_names, all_envs),
         save_name_prefix=aggregate_name,
         base_data_folder_path=data_path,
         save_folder_path=save_path,
@@ -98,7 +95,7 @@ def plot_cql_performance_curves(labels, base_names):
     )
 
     # separate
-    for env_dataset_name in d4rl_12_datasets_envs:
+    for env_dataset_name in all_envs:
         quick_plot_with_full_name(  # labels, folder name prefix, envs
             labels,
             get_full_names_with_envs(base_names, [env_dataset_name]),
@@ -473,20 +470,37 @@ def plot_dt_loss_curves():
 #     iclr_cql_iid_preT100k
 # ]
 
+# labels = [
+#     'CQL',
+#     'MDP_MSE',
+#     'MDP_MLE'
+# ]
+#
+# base_names = [
+#     iclr_cql,
+#     iclr_cql_mdp_t1,
+#     cql_mdp_mle
+# ]
+
 labels = [
     'CQL',
-    'MDP_MSE',
-    'MDP_MLE'
+    'CQL_mdp',
+    'CQL_same',
+    'CQL_lag',
+    'CQL_mdp_lag',
+    'CQL_same_lag'
 ]
-
 base_names = [
-    iclr_cql,
-    iclr_cql_mdp_t1,
-    cql_mdp_mle
+    cql_antmaze_l3,
+    cql_antmaze_mdp_l3,
+    cql_antmaze_same_l3,
+    cql_antmaze_l3_lag,
+    cql_antmaze_mdp_l3_lag,
+    cql_antmaze_same_l3_lag
 ]
 
-data_path = '../../code/checkpoints/sendbackcql'
-save_path = '../../figures/'
+data_path = '../../code/checkpoints/antmaze'
+save_path = '../../figures/antmaze'
 plot_cql_performance_curves(labels, base_names)
 # plot_cql_q_loss_curves(labels, base_names)
 # plot_cql_combined_loss_curves(labels, base_names)
