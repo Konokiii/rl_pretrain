@@ -45,8 +45,8 @@ def main():
         'offline_data_ratio', 'offRatio', [0.1],
         'qf_hidden_layer', 'l', [2],
         'mdppre_n_state', 'ns', [10, 1000],
-        'mdppre_policy_temperature', 'pt', [0.1, 10],
-        'n_pretrain_epochs', 'preEp', [8, 100],
+        'mdppre_policy_temperature', 'pt', [1],
+        'n_pretrain_epochs', 'preEp', [20],
         'mdppre_same_as_s_and_policy', 'same', [True],
         'seed', '', [42, 666, 1024, 2048, 4069],
     ]  #
