@@ -30,6 +30,16 @@ def gen_mdp_data(n_traj, max_length, n_state, n_action, policy_temperature, tran
         next_states = np.concatenate((states[1:], np.random.randint(n_state, size=1)), dtype=int)
         actions = np.random.randint(n_action, size=n_data, dtype=int)
 
+    elif policy_temperature == transition_temperature == 'identity':
+        states = np.random.randint(n_state, size=n_data, dtype=int)
+        actions = np.random.randint(n_action, size=n_data, dtype=int)
+        next_states = np.zeros(n_data, dtype=int)
+
+    elif policy_temperature == transition_temperature == 'case_mapping':
+        states = np.random.randint(n_state, size=n_data, dtype=int)
+        actions = np.random.randint(n_action, size=n_data, dtype=int)
+        next_states = np.zeros(n_data, dtype=int)
+
     elif policy_temperature == transition_temperature == 'fix_sprime':
         np.random.seed(0)
         origin = np.random.randint(n_state)
@@ -165,8 +175,8 @@ n_traj, max_length = 1000, 1000
 #         n_action = n_state
 #         gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature)
 
-for n_state in [42]:
-    for temperature in [1]:
+for n_state in [3500]:
+    for temperature in ['identity', 'case_mapping']:
         n_action = n_state
         gen_mdp_data(n_traj, max_length, n_state, n_action, temperature, temperature)
 

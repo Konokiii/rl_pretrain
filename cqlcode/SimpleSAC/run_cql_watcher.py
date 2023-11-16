@@ -419,15 +419,19 @@ def run_single_exp(variant):
             orthogonal_init=variant['orthogonal_init'],
         )
     else:  # no projection layer
+        pretrain_output_dim = eval_sampler.env.observation_space.shape[0] + eval_sampler.env.action_space.shape[0] \
+            if variant['mdppre_policy_temperature'] in ['identity', 'case_mapping'] else None
         qf1 = FullyConnectedQFunctionPretrain(
             eval_sampler.env.observation_space.shape[0],
             eval_sampler.env.action_space.shape[0],
+            pretrain_output_dim=pretrain_output_dim,
             arch=qf_arch,
             orthogonal_init=variant['orthogonal_init'],
         )
         qf2 = FullyConnectedQFunctionPretrain(
             eval_sampler.env.observation_space.shape[0],
             eval_sampler.env.action_space.shape[0],
+            pretrain_output_dim=pretrain_output_dim,
             arch=qf_arch,
             orthogonal_init=variant['orthogonal_init'],
         )
@@ -599,8 +603,14 @@ def run_single_exp(variant):
                         for i in range(5)]
                     index2action = np.concatenate(action_clusters, axis=0, dtype=np.float32)
                 else:
-                    index2state = 2 * np.random.rand(variant['mdppre_n_state'], variant['mdppre_state_dim']) - 1
-                    index2action = 2 * np.random.rand(variant['mdppre_n_action'], variant['mdppre_action_dim']) - 1
+                    if str(variant['mdppre_policy_temperature']) == 'case_mapping':
+                        num_states = 2 * variant['mdppre_n_state']
+                        num_actions = 2 * variant['mdppre_n_action']
+                    else:
+                        num_states = variant['mdppre_n_state']
+                        num_actions = variant['mdppre_n_action']
+                    index2state = 2 * np.random.rand(num_states, variant['mdppre_state_dim']) - 1
+                    index2action = 2 * np.random.rand(num_actions, variant['mdppre_action_dim']) - 1
                     index2state, index2action = index2state.astype(np.float32), index2action.astype(np.float32)
 
                 if variant['mdppre_policy_temperature'] == variant['mdppre_transition_temperature'] == 'mean_sprime':
@@ -616,20 +626,30 @@ def run_single_exp(variant):
                     batch = subsample_batch(dataset, variant['batch_size'])
 
                     if not pretrain_env_name:
+                        # TODO: rewrite the following piece of junk code :(
+                        if variant['mdppre_policy_temperature'] == 'case_mapping':
+                            shift = variant['mdppre_n_state']
+                            uppercase_obs = index2state[batch['observations'] + shift]
+                            uppercase_act = index2action[batch['actions'] + shift]
+
                         batch['observations'] = index2state[batch['observations']]
                         batch['actions'] = index2action[batch['actions']]
                         if variant['mdppre_policy_temperature'] == variant[
                             'mdppre_transition_temperature'] == 'mean_sprime':
                             batch['next_observations'] = np.tile(mean_sprime, (variant['batch_size'], 1))
+                        elif variant['mdppre_policy_temperature'] == 'identity':
+                            batch['next_observations'] = np.concatenate([batch['observations'], batch['actions']], axis=-1)
+                        elif variant['mdppre_policy_temperature'] == 'case_mapping':
+                            batch['next_observations'] = np.concatenate([uppercase_obs, uppercase_act], axis=-1)
                         else:
                             batch['next_observations'] = index2state[batch['next_observations']]
-                    if variant['pretrain_mode'] == 'random_fd_1000_state':
-                        rand_obs = np.random.choice(1000, size=variant['batch_size'])
-                        rand_acts = np.random.choice(1000, size=variant['batch_size'])
-                        rand_next_obs = np.random.choice(1000, size=variant['batch_size'])
-                        batch['observations'] = index2state[rand_obs]
-                        batch['actions'] = index2action[rand_acts]
-                        batch['next_observations'] = index2state[rand_next_obs]
+                    # if variant['pretrain_mode'] == 'random_fd_1000_state':
+                    #     rand_obs = np.random.choice(1000, size=variant['batch_size'])
+                    #     rand_acts = np.random.choice(1000, size=variant['batch_size'])
+                    #     rand_next_obs = np.random.choice(1000, size=variant['batch_size'])
+                    #     batch['observations'] = index2state[rand_obs]
+                    #     batch['actions'] = index2action[rand_acts]
+                    #     batch['next_observations'] = index2state[rand_next_obs]
 
                     batch = batch_to_torch(batch, variant['device'])
                     metrics.update(agent.pretrain(batch, variant['pretrain_mode'], variant['mdppre_n_state']))

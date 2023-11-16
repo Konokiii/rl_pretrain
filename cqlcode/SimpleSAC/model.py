@@ -191,7 +191,7 @@ class FullyConnectedQFunction(nn.Module):
 
 class FullyConnectedQFunctionPretrain(nn.Module):
 
-    def __init__(self, obs_dim, action_dim, arch='256-256', orthogonal_init=False):
+    def __init__(self, obs_dim, action_dim, pretrain_output_dim=None, arch='256-256', orthogonal_init=False):
         super().__init__()
         self.obs_dim = obs_dim
         self.action_dim = action_dim
@@ -221,11 +221,11 @@ class FullyConnectedQFunctionPretrain(nn.Module):
         nn.init.constant_(self.last_fc_layer.bias, 0.0)
 
         # pretrain mode: q_sprime
-        self.hidden_to_next_obs = nn.Linear(d, obs_dim)
+        self.hidden_to_next_obs = nn.Linear(d, pretrain_output_dim or obs_dim)
         # pretrain mode: q_mc
         self.hidden_to_value = nn.Linear(d, 1)
         # pretrain mode: q_mle
-        self.hidden_to_dist = nn.Linear(d, 2 * obs_dim)
+        self.hidden_to_dist = nn.Linear(d, 2 * (pretrain_output_dim or obs_dim))
 
         if orthogonal_init:
             nn.init.orthogonal_(self.hidden_to_next_obs.weight, gain=1e-2)
