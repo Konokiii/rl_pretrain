@@ -29,26 +29,25 @@ else:
     DEVICE = 'cpu'
 
 
-def main(setting):
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--setting', type=int, default=0)
-    # args = parser.parse_args()
-    # setting = args.setting
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--setting', type=int, default=0)
+    args = parser.parse_args()
+    setting = args.setting
 
     variant = get_default_variant_dict()  # this is a dictionary
     ###########################################################
     exp_prefix = 'cqlr3n'
     settings = [
         'env', '', MUJOCO_4_ENVS,  # MUJOCO_3_ENVS,
-        'dataset', '', ['medium'],#MUJOCO_3_DATASETS,
+        'dataset', '', MUJOCO_3_DATASETS,
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
-        'do_pretrain_only', 'dpo', [True],
         'qf_hidden_layer', 'l', [2],
         'mdppre_n_state', 'ns', [3500],
         'mdppre_policy_temperature', 'pt', ['identity', 'case_mapping'],
         'n_pretrain_epochs', 'preEp', [20],
         'mdppre_same_as_s_and_policy', 'same', [True],
-        'seed', '', [0]#list(range(5)),
+        'seed', '', list(range(5)),
     ]  #
 
     indexes, actual_setting, total, hyper2logname = get_setting_dt(settings, setting)
@@ -69,5 +68,4 @@ def main(setting):
 
 
 if __name__ == '__main__':
-    for i in range(8):
-        main(i)
+    main()
