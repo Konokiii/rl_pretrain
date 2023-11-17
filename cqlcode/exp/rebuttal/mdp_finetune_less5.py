@@ -42,7 +42,7 @@ def main():
         'env', '', MUJOCO_4_ENVS,  # MUJOCO_3_ENVS,
         'dataset', '', MUJOCO_3_DATASETS,
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
-        'offline_data_ratio', 'offRatio', [0.8],
+        'offline_data_ratio', 'offRatio', [0.2],
         'qf_hidden_layer', 'l', [2],
         'mdppre_n_state', 'ns', [100],
         'mdppre_policy_temperature', 'pt', [0.1, 1, 10, 'inf3'],

@@ -218,7 +218,7 @@ def main():
 
 def save_extra_dict(variant, logger, dataset,
                     ret_list, ret_normalized_list, iter_list, step_list,
-                    agent_after_pretrain, agent_e20, agent, best_agent,
+                    agent_init, agent_after_pretrain, agent_e20, agent, best_agent,
                     best_return, best_return_normalized, best_step, best_iter,
                     return_e20, return_normalized_e20, additional_dict=None):
     """get extra dict"""
@@ -242,6 +242,13 @@ def save_extra_dict(variant, logger, dataset,
         best_agent, agent_after_pretrain)
     best_feature_diff, best_feature_sim, num_feature_timesteps = get_feature_diff(best_agent, agent_after_pretrain,
                                                                                   dataset, variant['device'])
+
+    init_weight_diff, init_weight_sim, wd0_init, ws0_init, wd1_init, ws1_init, wdfc_init, wsfc_init = get_weight_diff(agent, agent_init)
+    init_feature_diff, init_feature_sim, _ = get_feature_diff(agent, agent_init, dataset, variant['device'])
+
+    pre_weight_diff, pre_weight_sim, wd0_pre, ws0_pre, wd1_pre, ws1_pre, wdfc_pre, wsfc_pre = get_weight_diff(agent_after_pretrain, agent_init)
+    pre_feature_diff, pre_feature_sim, _ = get_feature_diff(agent_after_pretrain, agent_init, dataset, variant['device'])
+
     # save extra dict
     extra_dict = {
         'final_weight_diff': final_weight_diff,
@@ -267,6 +274,30 @@ def save_extra_dict(variant, logger, dataset,
         "best_0_weight_sim": ws0_best,
         "best_1_weight_sim": ws1_best,
         "best_fc_weight_sim": wsfc_best,
+
+        'init_weight_diff': init_weight_diff,
+        'init_weight_sim': init_weight_sim,
+        'init_feature_diff': init_feature_diff,
+        'init_feature_sim': init_feature_sim,
+
+        "init_0_weight_diff": wd0_init,
+        "init_1_weight_diff": wd1_init,
+        "init_fc_weight_diff": wdfc_init,
+        "init_0_weight_sim": ws0_init,
+        "init_1_weight_sim": ws1_init,
+        "init_fc_weight_sim": wsfc_init,
+
+        'pre_weight_diff': final_weight_diff,
+        'pre_weight_sim': final_weight_sim,
+        'pre_feature_diff': final_feature_diff,
+        'pre_feature_sim': final_feature_sim,
+
+        "pre_0_weight_diff": wd0_pre,
+        "pre_1_weight_diff": wd1_pre,
+        "pre_fc_weight_diff": wdfc_pre,
+        "pre_0_weight_sim": ws0_pre,
+        "pre_1_weight_sim": ws1_pre,
+        "pre_fc_weight_sim": wsfc_pre,
 
         'e20_weight_diff': e20_weight_diff,  # unique to cql due to more training updates
         'e20_weight_sim': e20_weight_sim,
@@ -444,6 +475,10 @@ def run_single_exp(variant):
 
     agent = ConservativeSAC(variant['cql'], policy, qf1, qf2, target_qf1, target_qf2, variant)
     agent.torch_to_device(variant['device'])
+    agent_init = deepcopy(agent)
+    if variant['save_model']:
+        save_dict = {'agent': agent_init, 'variant': variant, 'epoch': 0}
+        logger.save_dict(save_dict, 'agent_random.pth')
 
     sampler_policy = SamplerPolicy(policy, variant['device'])
 
@@ -796,13 +831,13 @@ def run_single_exp(variant):
                 logger.save_dict(save_dict, 'agent_e%d.pth' % (epoch + 1))
                 # wandb_logger.save_pickle(save_data, 'model.pkl')
 
-            if (epoch + 1) % 20 == 0:
-                # additional_dict = get_additional_dict(additional_dict_with_list)
-                save_extra_dict(variant, logger, dataset,
-                                ret_list, ret_normalized_list, iter_list, step_list,
-                                agent_after_pretrain, agent_e20, agent, best_agent,
-                                best_return, best_return_normalized, best_step, best_iter,
-                                return_e20, return_normalized_e20)
+            # if (epoch + 1) % 20 == 0:
+            #     # additional_dict = get_additional_dict(additional_dict_with_list)
+            #     save_extra_dict(variant, logger, dataset,
+            #                     ret_list, ret_normalized_list, iter_list, step_list,
+            #                     agent_after_pretrain, agent_e20, agent, best_agent,
+            #                     best_return, best_return_normalized, best_step, best_iter,
+            #                     return_e20, return_normalized_e20)
 
         metrics['train_time'] = train_timer()
         metrics['eval_time'] = eval_timer()
@@ -841,9 +876,12 @@ def run_single_exp(variant):
     # additional_dict = get_additional_dict(additional_dict_with_list)
     save_extra_dict(variant, logger, dataset,
                     ret_list, ret_normalized_list, iter_list, step_list,
-                    agent_after_pretrain, agent_e20, agent, best_agent,
+                    agent_init, agent_after_pretrain, agent_e20, agent, best_agent,
                     best_return, best_return_normalized, best_step, best_iter,
                     return_e20, return_normalized_e20)
+    if variant['save_model']:
+        save_dict = {'agent': agent, 'variant': variant, 'epoch': variant['n_epochs']}
+        logger.save_dict(save_dict, 'agent_final.pth')
 
 
 if __name__ == '__main__':

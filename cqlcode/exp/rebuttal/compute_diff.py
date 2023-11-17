@@ -37,16 +37,15 @@ def main():
 
     variant = get_default_variant_dict()  # this is a dictionary
     ###########################################################
-    exp_prefix = 'cqlr3n'
+    exp_prefix = 'cqlr3n_diff'
     settings = [
         'env', '', MUJOCO_4_ENVS,  # MUJOCO_3_ENVS,
         'dataset', '', MUJOCO_3_DATASETS,
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
-        'offline_data_ratio', 'offRatio', [0.6],
         'qf_hidden_layer', 'l', [2],
         'mdppre_n_state', 'ns', [100],
         'mdppre_policy_temperature', 'pt', [1],
-        'n_pretrain_epochs', 'preEp', [2, 8, 20, 100],
+        'n_pretrain_epochs', 'preEp', [20],
         'mdppre_same_as_s_and_policy', 'same', [True],
         'seed', '', [42, 666, 1024, 2048, 4069],
     ]  #
