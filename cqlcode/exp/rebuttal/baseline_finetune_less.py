@@ -42,7 +42,7 @@ def main():
         'env', '', MUJOCO_4_ENVS,  # MUJOCO_3_ENVS,
         'dataset', '', MUJOCO_3_DATASETS,
         'pretrain_mode', 'pre', ['none'],  # 'none', 'q_sprime', 'mdp_q_sprime'
-        'offline_data_ratio', 'offRatio', [0.1, 0.4, 0.8],
+        'offline_data_ratio', 'offRatio', [0.2, 0.6],
         'qf_hidden_layer', 'l', [2],
         'seed', '', [42, 666, 1024, 2048, 4069],
     ]  #
