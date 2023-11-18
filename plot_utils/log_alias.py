@@ -473,14 +473,33 @@ cql_crude_init = 'Init_cqlr3n_premdp_same_noproj_l2_initcrude_init'
 cql_mdp_mle = 'Init_cqlr3n_premdp_mle_l2_ns100_pt1_sameTrue_preUps5000_preEp20'
 
 # 2023/11/12: Antmaze
-cql_antmaze_l3 = 'cql_prenone_l3_safeQFalse_lagFalse'
-cql_antmaze_l3_lag = 'cql_prenone_l3_safeQFalse_lagTrue'
-cql_antmaze_mdp_l3 = 'cql_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagFalse'
-cql_antmaze_mdp_l3_lag = 'cql_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagTrue'
-cql_antmaze_same_l3 = 'cql_preq_sprime_l3_safeQFalse_lagFalse'
-cql_antmaze_same_l3_lag = 'cql_preq_sprime_l3_safeQFalse_lagTrue'
+cql_subopt_antmaze = 'cql_prenone_l3_safeQFalse_lagFalse'
+cql_subopt_antmaze_lag = 'cql_prenone_l3_safeQFalse_lagTrue'
+cql_subopt_antmaze_mdp = 'cql_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagFalse'
+cql_subopt_antmaze_mdp_lag = 'cql_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagTrue'
+cql_subopt_antmaze_same = 'cql_preq_sprime_l3_safeQFalse_lagFalse'
+cql_subopt_antmaze_same_lag = 'cql_preq_sprime_l3_safeQFalse_lagTrue'
 
+# 2023/11/17: rebuttal
+cql_tuned_antmaze = 'cql_tuned_prenone_l3_safeQFalse_lagFalse'
+cql_tuned_antmaze_lag = 'cql_tuned_prenone_l3_safeQFalse_lagTrue'
+cql_tuned_antmaze_mdp = 'cql_tuned_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagFalse'
+cql_tuned_antmaze_mdp_lag = 'cql_tuned_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagTrue'
+cql_tuned_antmaze_same = 'cql_tuned_preq_sprime_l3_safeQFalse_lagFalse'
+cql_tuned_antmaze_same_lag = 'cql_tuned_preq_sprime_l3_safeQFalse_lagTrue'
 
+cql_offRatio = {}
+for offR in [0.1, 0.2, 0.4, 0.6, 0.8]:
+    for ns in [10, 100, 1000, 10000]:
+        for pt in [0.1, 1, 10, 'inf3']:
+            for preEp in [2, 8, 20, 100]:
+                cql_offRatio[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                    f'cqlr3n_premdp_same_noproj_offRatio{offR}_l2_ns{ns}_pt{pt}_preEp{preEp}_sameTrue'
+
+cql_identity = 'cqlr3n_premdp_same_noproj_dpoTrue_l2_ns3500_ptidentity_preEp20_sameTrue'
+cql_case_mapping = 'cqlr3n_premdp_same_noproj_dpoTrue_l2_ns3500_ptcase_mapping_preEp20_sameTrue'
+
+cql_diff = 'cqlr3n_diff_premdp_same_noproj_l2_ns100_pt1_preEp20_sameTrue'
 
 
 

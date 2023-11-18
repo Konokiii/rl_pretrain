@@ -39,36 +39,6 @@ def main():
     ###########################################################
     exp_prefix = 'cqlr3n'
     settings = [
-        {'env': 'ant',
-         'dataset': 'medium-expert',
-         'pretrain_mode': 'mdp_same_noproj',
-         'offline_data_ratio': 0.2,
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 100,
-         'mdppre_policy_temperature': 1,
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 42},
-        {'env': 'hopper',
-         'dataset': 'medium',
-         'pretrain_mode': 'mdp_same_noproj',
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 3500,
-         'mdppre_policy_temperature': 'identity',
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 0
-         },
-        {'env': 'hopper',
-         'dataset': 'medium-expert',
-         'pretrain_mode': 'mdp_same_noproj',
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 3500,
-         'mdppre_policy_temperature': 'case_mapping',
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 0
-         },
         {'env': 'hopper',
          'dataset': 'medium-expert',
          'pretrain_mode': 'mdp_same_noproj',
@@ -78,35 +48,10 @@ def main():
          'n_pretrain_epochs': 20,
          'mdppre_same_as_s_and_policy': True,
          'seed': 3
-         },
-        {'env': 'walker2d',
-         'dataset': 'medium',
-         'pretrain_mode': 'mdp_same_noproj',
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 3500,
-         'mdppre_policy_temperature': 'identity',
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 1
-         },
-        {'env': 'walker2d',
-         'dataset': 'medium',
-         'pretrain_mode': 'mdp_same_noproj',
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 3500,
-         'mdppre_policy_temperature': 'case_mapping',
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 0
          }
     ]
     setting_names = [
-        'cqlr3n_premdp_same_noproj_offRatio0.2_l2_ns100_pt1_preEp20_sameTrue_ant_medium-expert',
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptidentity_preEp20_sameTrue_hopper_medium',
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_hopper_medium-expert',
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_hopper_medium-expert',
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptidentity_preEp20_sameTrue_walker2d_medium',
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_walker2d_medium'
+        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_hopper_medium-expert'
     ]
 
     actual_setting = settings[setting]
