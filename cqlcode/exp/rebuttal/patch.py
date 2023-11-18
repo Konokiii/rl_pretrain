@@ -48,10 +48,22 @@ def main():
          'n_pretrain_epochs': 20,
          'mdppre_same_as_s_and_policy': True,
          'seed': 3
+         },
+        {'env': 'hopper',
+         'dataset': 'medium-expert',
+         'pretrain_mode': 'mdp_same_noproj',
+         'offline_data_ratio': 0.6,
+         'qf_hidden_layer': 2,
+         'mdppre_n_state': 10,
+         'mdppre_policy_temperature': 1,
+         'n_pretrain_epochs': 20,
+         'mdppre_same_as_s_and_policy': True,
+         'seed': 4069
          }
     ]
     setting_names = [
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_hopper_medium-expert'
+        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_hopper_medium-expert',
+        'cqlr3n_premdp_same_noproj_offRatio0.6_l2_ns10_pt1_preEp20_sameTrue_hopper_medium-expert'
     ]
 
     actual_setting = settings[setting]
