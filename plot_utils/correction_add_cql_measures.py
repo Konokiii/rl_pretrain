@@ -77,7 +77,7 @@ for root, dirs, files in os.walk(base_path):
                             print(dir)
                             print('Warning: NAN detected!!')
                             error_count += 1
-                            shutil.rmtree(subfolder)
+                            # shutil.rmtree(subfolder)
                             # generate_hotfix(dir, settings, setting_names)
 
                         ex = os.path.join(subfolder, 'extra.json')

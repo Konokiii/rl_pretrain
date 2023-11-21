@@ -229,7 +229,7 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
             aggregate_dict[measure] = []
 
         for subdir, dirs, files in os.walk(datafolder_path):
-            if len(aggregate_dict.item()[0]) >= (max_seeds or 9999999):
+            if len(aggregate_dict[measures[0]]) >= (max_seeds or 9999999):
                 break
             if 'extra_new.json' in files or 'extra.json' in files:
                 if 'extra_new.json' in files:
@@ -241,9 +241,14 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
                     extra_dict = json.load(file)
                     for measure in measures:
                         aggregate_dict[measure].append(float(extra_dict[measure]))
+                    if f'cqlr3n_premdp_same_noproj_offRatio{0.4}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
+                        print(subdir)
+        if f'cqlr3n_premdp_same_noproj_offRatio{0.4}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
+            print(aggregate_dict['last_four_normalized'])
         for measure in measures:
             if len(aggregate_dict[measure]) == 0:
                 print(datafolder_path, 'has nothing for measure:', measure)
+                return None
             aggregate_dict[measure] = [np.mean(aggregate_dict[measure]), np.std(aggregate_dict[measure])]
         for measure in ['last_four_normalized']:
             aggregate_dict[measure + '_std'] = [aggregate_dict[measure][1], ]
@@ -264,7 +269,9 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
             alg_dataset_dict[alg] = {}
             for dataset_name in datasets:
                 folderpath = os.path.join(data_path, '%s_%s' % (alg, dataset_name))
-                alg_dataset_dict[alg][dataset_name] = get_extra_dict_multiple_seeds(folderpath)
+                possible_output = get_extra_dict_multiple_seeds(folderpath)
+                if possible_output:
+                    alg_dataset_dict[alg][dataset_name] = possible_output
             y_mean, y_std = get_aggregated_value(alg_dataset_dict, alg, measure)
             y_mean_list.append(y_mean)
         ax = sns.lineplot(x=x_values, y=y_mean_list, n_boot=20, label=labels[i], color=DEFAULT_COLORS[i], linewidth=1,
