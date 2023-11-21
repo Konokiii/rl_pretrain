@@ -54,59 +54,39 @@ def print_figures_latex(figure_folder, figure_names, sub_figure_captions, captio
     print()
 
 
-MUJOCO_3_ENVS = [ 'halfcheetah', 'hopper', 'walker2d', ]
-MUJOCO_3_DATASETS = ['medium-expert','medium','medium-replay',]
-d4rl_9_datasets_envs = []
-for d in MUJOCO_3_DATASETS:
-    for e in MUJOCO_3_ENVS:
-        d4rl_9_datasets_envs.append('%s_%s' % (e, d))
+# Locomotion dataset names:
+MUJOCO_3_ENVS = ['hopper', 'walker2d', 'halfcheetah']
+MUJOCO_4_ENVS = ['hopper', 'walker2d', 'halfcheetah', 'ant']
+MUJOCO_3_DATASETS = ['medium', 'medium-replay', 'medium-expert']
+LOCOMOTION_9_DATASETS = ['%s_%s' % (e, d) for e in MUJOCO_3_ENVS for d in MUJOCO_3_DATASETS]
+LOCOMOTION_12_DATASETS = ['%s_%s' % (e, d) for e in MUJOCO_4_ENVS for d in MUJOCO_3_DATASETS]
 
-MUJOCO_3_ENVS_captions = ['HalfCheetah', 'Hopper', 'Walker',  ]
-MUJOCO_3_DATASETS_captions = ['medium-expert','medium','medium-replay',]
-d4rl_9_datasets_envs_captions = []
-for d in MUJOCO_3_DATASETS_captions:
-    for e in MUJOCO_3_ENVS_captions:
-        d4rl_9_datasets_envs_captions.append('%s %s' % (e, d))
+# Antmaze dataset names:
+ANTMAZE_3_LAYOUTS = ['antmaze-umaze', 'antmaze-medium', 'antmaze-large']
+ANTMAZE_2_RULES = ['play', 'diverse']
+ANTMAZE_6_DATASETS = ['%s_%s' % (e, d) for d in ANTMAZE_2_RULES for e in ANTMAZE_3_LAYOUTS]
 
-MUJOCO_4_ENVS = [ 'halfcheetah', 'hopper', 'walker2d', 'ant']
-MUJOCO_3_DATASETS = ['medium-expert','medium','medium-replay',]
-d4rl_12_datasets_envs = []
-for e in MUJOCO_4_ENVS:
-    for d in MUJOCO_3_DATASETS:
-        d4rl_12_datasets_envs.append('%s_%s' % (e, d))
 
-MUJOCO_4_ENVS_captions = ['HalfCheetah', 'Hopper', 'Walker', 'Ant' ]
-MUJOCO_3_DATASETS_captions = ['medium-expert','medium','medium-replay',]
-d4rl_12_datasets_envs_captions = []
-for e in MUJOCO_4_ENVS_captions:
-    for d in MUJOCO_3_DATASETS_captions:
-        d4rl_12_datasets_envs_captions.append('%s %s' % (e, d))
-
-ANTMAZE_3_ENVS = ['antmaze-umaze', 'antmaze-medium', 'antmaze-large']
-ANTMAZE_2_DATASETS = ['play', 'diverse']
-d4rl_6_antmaze_datasets = []
-for e in ANTMAZE_3_ENVS:
-    for d in ANTMAZE_2_DATASETS:
-        d4rl_6_antmaze_datasets.append('%s_%s' % (e, d))
-
-def gen_cql_curves():
-    figure_folder= 'dzx_figures/cql_antmaze'
+def gen_cql_curves(figure_folder, datasets, exp_name):
     figure_names = []
-    subfigure_captions = d4rl_6_antmaze_datasets
-    all_envs = d4rl_6_antmaze_datasets
+    subfigure_captions = [d[0].upper() + d[1:] for d in datasets]
+
+    aggregate_name = 'agg-cql' if not exp_name else 'agg-cql_' + exp_name
+
+    separate_name = 'ind-cql' if not exp_name else 'ind-cql_' + exp_name
 
     # performance-aggregated
     print("\\begin{figure}[htb]")
     print("\\centering")
-    print('\\includegraphics[width=\\linewidth]{%s/%s}' % (figure_folder, 'agg-cql_TestEpNormRet.png'))
+    print('\\includegraphics[width=\\linewidth]{%s/%s}' % (figure_folder, aggregate_name + '_TestEpNormRet.png'))
     print('\\caption{%s}' % 'Performance curve of each setting averaged over 12 datasets.')
     print('\\label{%s}' % 'fig:cql-performance-agg-curves')
     print('\\end{figure}')
     print()
 
     # performance-individual
-    for e in all_envs:
-        figure_names.append('ind-cql_TestEpNormRet_%s.png' % e)
+    for e in datasets:
+        figure_names.append(separate_name + '_TestEpNormRet_%s.png' % e)
 
     caption = 'Learning curves for CQL, CQL with same task RL data pretraining, and CQL with MDP pretraining.'
     ref_label = 'fig:cql-performance-curves'
@@ -118,94 +98,6 @@ def gen_cql_curves():
         ref_label,
     )
 
-    # # q loss
-    # figure_names = []
-    # for e in d4rl_9_datasets_envs:
-    #     figure_names.append('ind-cql_sac_qf1_loss_%s.png' % e)
-    #
-    # caption = 'Standard Q loss for CQL, CQL with same task RL data pretraining, and CQL with MDP pretraining.'
-    # ref_label = 'fig:cql-q-loss-curves'
-    # print_figures_latex(
-    #     figure_folder,
-    #     figure_names,
-    #     subfigure_captions,
-    #     caption,
-    #     ref_label,
-    # )
-    #
-    # # combined loss
-    print("\\begin{figure}[htb]")
-    print("\\centering")
-    print('\\includegraphics[width=\\linewidth]{%s/%s}' % (figure_folder, 'agg-cql_sac_combined_loss.png'))
-    print('\\caption{%s}' % 'Combined Loss curve of each setting averaged over 12 datasets.')
-    print('\\label{%s}' % 'fig:cql-combined-loss-agg-curves')
-    print('\\end{figure}')
-    print()
 
-    # performance-individual
-    figure_names = []
-    for e in all_envs:
-        figure_names.append('ind-cql_sac_combined_loss_%s.png' % e)
+gen_cql_curves(figure_folder='dzx_figures/cql_antmaze', datasets=LOCOMOTION_12_DATASETS, exp_name=None)
 
-    caption = 'Combined loss (Q loss and conservative loss) for CQL, CQL with same task RL data pretraining, and CQL with MDP pretraining.'
-    ref_label = 'fig:cql-combined-loss-curves'
-    print_figures_latex(
-        figure_folder,
-        figure_names,
-        subfigure_captions,
-        caption,
-        ref_label,
-    )
-    # figure_names = []
-    # for e in d4rl_9_datasets_envs:
-    #     figure_names.append('ind-cql_sac_combined_loss_%s.png' % e)
-    #
-    # caption = 'Combined loss (Q loss and conservative loss) for CQL, CQL with same task RL data pretraining, and CQL with MDP pretraining.'
-    # ref_label = 'fig:cql-combined-loss-curves'
-    # print_figures_latex(
-    #     figure_folder,
-    #     figure_names,
-    #     subfigure_captions,
-    #     caption,
-    #     ref_label,
-    # )
-
-
-def gen_dt_curves():
-    figure_folder=  'figure-curves'
-    figure_names = []
-    subfigure_captions = d4rl_9_datasets_envs_captions
-
-    # performance
-    for e in d4rl_9_datasets_envs:
-        figure_names.append('ind-dt_TestEpNormRet_%s.png' % e)
-
-    caption = 'Learning curves for DT, DT with Wikipedia pretraining, and DT with MC pretraining.'
-    ref_label = 'fig:dt-performance-curves'
-    print_figures_latex(
-        figure_folder,
-        figure_names,
-        subfigure_captions,
-        caption,
-        ref_label,
-    )
-
-    # q loss
-    figure_names = []
-    for e in d4rl_9_datasets_envs:
-        figure_names.append('ind-dt_current_itr_train_loss_mean_%s.png' % e)
-
-    caption = 'Training loss curves for DT, DT with Wikipedia pretraining, and DT with MC pretraining.'
-    ref_label = 'fig:dt-train-loss-curves'
-    print_figures_latex(
-        figure_folder,
-        figure_names,
-        subfigure_captions,
-        caption,
-        ref_label,
-    )
-
-
-
-gen_cql_curves()
-# gen_dt_curves()

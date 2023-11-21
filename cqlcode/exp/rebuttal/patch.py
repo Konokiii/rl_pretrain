@@ -8,6 +8,7 @@ os.environ['LD_LIBRARY_PATH'] = ld_library_path
 os.environ['MUJOCO_GL'] = 'egl'
 os.environ['MUJOCO_PY_MUJOCO_PATH'] = '/workspace/.mujoco/mujoco210/'
 import time
+import json
 from copy import deepcopy
 import uuid
 import numpy as np
@@ -38,33 +39,10 @@ def main():
     variant = get_default_variant_dict()  # this is a dictionary
     ###########################################################
     exp_prefix = 'cqlr3n'
-    settings = [
-        {'env': 'hopper',
-         'dataset': 'medium-expert',
-         'pretrain_mode': 'mdp_same_noproj',
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 3500,
-         'mdppre_policy_temperature': 'case_mapping',
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 3
-         },
-        {'env': 'hopper',
-         'dataset': 'medium-expert',
-         'pretrain_mode': 'mdp_same_noproj',
-         'offline_data_ratio': 0.6,
-         'qf_hidden_layer': 2,
-         'mdppre_n_state': 10,
-         'mdppre_policy_temperature': 1,
-         'n_pretrain_epochs': 20,
-         'mdppre_same_as_s_and_policy': True,
-         'seed': 4069
-         }
-    ]
-    setting_names = [
-        'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue_hopper_medium-expert',
-        'cqlr3n_premdp_same_noproj_offRatio0.6_l2_ns10_pt1_preEp20_sameTrue_hopper_medium-expert'
-    ]
+    with open('patch_settings.json', 'r') as setting_file:
+        settings = json.load(setting_file)
+    with open('patch_names.json', 'r') as names_file:
+        setting_names = json.load(names_file)
 
     actual_setting = settings[setting]
     exp_name_full = setting_names[setting]

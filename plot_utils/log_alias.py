@@ -488,16 +488,36 @@ cql_tuned_antmaze_mdp_lag = 'cql_tuned_premdp_same_noproj_l3_ns100_pt1_sameTrue_
 cql_tuned_antmaze_same = 'cql_tuned_preq_sprime_l3_safeQFalse_lagFalse'
 cql_tuned_antmaze_same_lag = 'cql_tuned_preq_sprime_l3_safeQFalse_lagTrue'
 
-cql_offRatio = {}
+cql_offRatio_baseline = {}
+for offR in [0.1, 0.2, 0.4, 0.6, 0.8]:
+    cql_offRatio_baseline[f'cql_offR{offR}_baseline'] = f'cqlr3n_prenone_offRatio{offR}_l2'
+cql_offRatio_baseline['cql_offR1_baseline'] = iclr_cql
+
+cql_offRatio_mdp = {}
 for offR in [0.1, 0.2, 0.4, 0.6, 0.8]:
     for ns in [10, 100, 1000, 10000]:
         for pt in [0.1, 1, 10, 'inf3']:
             for preEp in [2, 8, 20, 100]:
-                cql_offRatio[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
                     f'cqlr3n_premdp_same_noproj_offRatio{offR}_l2_ns{ns}_pt{pt}_preEp{preEp}_sameTrue'
+for ns in [10, 100, 1000, 10000]:
+    for pt in [0.1, 1, 10, 'inf3']:
+        for preEp in [2, 8, 20, 100]:
+            cql_offRatio_mdp[f'cql_offR1_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                f'iclr_cqlr3n_premdp_same_noproj_l2_ns{ns}_pt{pt}_sameTrue_preUps5000_preEp{preEp}'
+for offR in [0.1]:
+    for ns in [100]:
+        for pt in [1]:
+            for preEp in [20]:
+                cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                    f'cqlr3n_premdp_same_noproj_offRatio{offR}_l2_ns{ns}_pt{pt}_sameTrue'
 
-cql_identity = 'cqlr3n_premdp_same_noproj_dpoTrue_l2_ns3500_ptidentity_preEp20_sameTrue'
-cql_case_mapping = 'cqlr3n_premdp_same_noproj_dpoTrue_l2_ns3500_ptcase_mapping_preEp20_sameTrue'
+
+
+
+
+cql_identity = 'cqlr3n_premdp_same_noproj_l2_ns3500_ptidentity_preEp20_sameTrue'
+cql_case_mapping = 'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue'
 
 cql_diff = 'cqlr3n_diff_premdp_same_noproj_l2_ns100_pt1_preEp20_sameTrue'
 

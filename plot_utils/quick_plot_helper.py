@@ -116,11 +116,12 @@ def quick_plot(labels, data_folders, colors=DEFAULT_COLORS, linestyles=DEFAULT_L
             else:
                 plt.show()
 
+
 def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COLORS, linestyles=DEFAULT_LINESTYLES, base_data_folder_path=DEFAULT_BASE_PATH,
                               save_name_prefix='test_save_figure', save_name_suffix=None, save_folder_path=DEFAULT_SAVE_PATH,
                               y_value=DEFAULT_Y_VALUE, verbose=True, ymin=None, ymax=None,
-                              y_use_log=None, x_to_use='Steps', xlabel='Number of Updates', axis_font_size=10,
-                              y_log_scale=False, x_always_scientific=True, smooth=1):
+                              y_use_log=None, x_to_use='Steps', xlabel='Number of Updates', axis_font_size=10, legend_font_size=10,
+                              y_log_scale=False, x_always_scientific=True, smooth=1, shift=None):
     # this plots
     label2seeds = OrderedDict()
     for label, data_folder_full_name_list in zip(labels, data_folder_full_names):
@@ -156,22 +157,22 @@ def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COL
 
     for y_to_plot in y_value:
         for i, (label, seeds) in enumerate(label2seeds.items()):
+            num_seeds = len(seeds)
             x = combine_data_in_seeds(seeds, x_to_use)
             y = combine_data_in_seeds(seeds, y_to_plot, smooth=smooth)
             if '_sim_' in y_to_plot:
                 y = 1-y
             if y_to_plot == 'total_time':
                 y = y / 3600
-            if label == 'CQL+MDP' or label == 'CQL+IID':
-                print('We are plotting w.r.t total updates criterion!! Rename labels if this is not required!!')
-                # y = y.reshape((240,-1))
-                # y = np.concatenate((np.zeros((240, 20)), y[:, 0:-20]), axis=1).reshape(-1)
-                x = x.reshape((-1, 200))[:, 20:].reshape(-1)
-                y = y.reshape((-1, 200))[:, 0:-20].reshape(-1)
-                ax = sns.lineplot(x=x, y=y, n_boot=20, label=label, color=colors[i], linestyle=linestyles[i], linewidth = 2)
+            if shift is not None:
+                if shift[i] > 0:
+                    x = x.reshape((num_seeds, -1))[:, shift[i]:].reshape(-1)
+                    y = y.reshape((num_seeds, -1))[:, 0:-shift[i]].reshape(-1)
+                ax = sns.lineplot(x=x, y=y, n_boot=20, label=label, color=colors[i], linestyle=linestyles[i],
+                                  linewidth=1)
             else:
                 ax = sns.lineplot(x=x, y=y, n_boot=20, label=label, color=colors[i], linestyle=linestyles[i],
-                                  linewidth=2)
+                                  linewidth=1)
         plt.xlabel(xlabel, fontsize=axis_font_size)
         y_label = y_to_y_label[y_to_plot] if y_to_plot in y_to_y_label else y_to_plot
         plt.ylabel(y_label, fontsize=axis_font_size)
@@ -186,7 +187,7 @@ def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COL
 
         plt.yticks(fontsize=axis_font_size)
         plt.xticks(fontsize=axis_font_size)
-        plt.legend(fontsize=axis_font_size)
+        plt.legend(fontsize=legend_font_size)
         plt.tight_layout()
         plt.tight_layout()
         save_folder_path_with_y = os.path.join(save_folder_path, y_to_plot)
@@ -206,3 +207,118 @@ def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COL
             plt.close()
         else:
             plt.show()
+
+
+cql_offRatio_baseline = {}
+for offR in [0.1, 0.2, 0.4, 0.6, 0.8]:
+    cql_offRatio_baseline[f'cql_offR{offR}_baseline'] = f'cqlr3n_prenone_offRatio{offR}_l2'
+cql_offRatio_baseline['cql_offR1_baseline'] = 'iclr_cqlr3n_prenone_l2'
+
+cql_offRatio_mdp = {}
+for offR in [0.1, 0.2, 0.4, 0.6, 0.8]:
+    for ns in [10, 100, 1000, 10000]:
+        for pt in [0.1, 1, 10, 'inf3']:
+            for preEp in [2, 8, 20, 100]:
+                cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                    f'cqlr3n_premdp_same_noproj_offRatio{offR}_l2_ns{ns}_pt{pt}_preEp{preEp}_sameTrue'
+for ns in [10, 100, 1000, 10000]:
+    for pt in [0.1, 1, 10, 'inf3']:
+        for preEp in [2, 8, 20, 100]:
+            cql_offRatio_mdp[f'cql_offR1_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                f'iclr_cqlr3n_premdp_same_noproj_l2_ns{ns}_pt{pt}_sameTrue_preUps5000_preEp{preEp}'
+def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_path, save_folder_path, legend_font_size=10,
+                       axis_font_size=10, verbose=True):
+    def get_extra_dict_multiple_seeds(datafolder_path):
+        # for a alg-dataset variant, obtain a dictionary with key-value pairs as measure:[avg across seeds, std across seeds]
+        if not os.path.exists(datafolder_path):
+            raise FileNotFoundError("Path does not exist: %s" % datafolder_path)
+        # return a list, each entry is the final performance of a seed
+        aggregate_dict = {}
+        measures = ['last_four_normalized']
+        for measure in measures:
+            aggregate_dict[measure] = []
+        aggregate_dict['weight_diff_100k'] = []  # TODO might want to extend later...
+        aggregate_dict['feature_diff_100k'] = []
+
+        for subdir, dirs, files in os.walk(datafolder_path):
+            if 'extra_new.json' in files or 'extra.json' in files:
+                if 'extra_new.json' in files:
+                    extra_dict_file_path = os.path.join(subdir, 'extra_new.json')
+                else:
+                    extra_dict_file_path = os.path.join(subdir, 'extra.json')
+
+                with open(extra_dict_file_path, 'r') as file:
+                    extra_dict = json.load(file)
+                    for measure in measures:
+                        aggregate_dict[measure].append(float(extra_dict[measure]))
+                    # if 'weight_diff_100k' not in extra_dict:
+                    #     aggregate_dict['weight_diff_100k'].append(float(extra_dict['final_weight_diff']))
+                    #     aggregate_dict['feature_diff_100k'].append(float(extra_dict['final_feature_diff']))
+                    # else:
+                    #     print(extra_dict['feature_diff_100k'])
+                    #     aggregate_dict['weight_diff_100k'].append(float(extra_dict['weight_diff_100k']))
+                    #     aggregate_dict['feature_diff_100k'].append(float(extra_dict['feature_diff_100k']))
+
+        for measure in measures:
+            if len(aggregate_dict[measure]) == 0:
+                print(datafolder_path, 'has nothing for measure:', measure)
+            aggregate_dict[measure] = [np.mean(aggregate_dict[measure]), np.std(aggregate_dict[measure])]
+        # for measure in ['final_test_returns', 'final_test_normalized_returns', 'best_return', 'best_return_normalized',
+        #                 'best_5percent_normalized', 'best_10percent_normalized', 'best_25percent_normalized',
+        #                 'best_50percent_normalized', 'best_100percent_normalized', 'best_later_half_normalized',
+        #                 'last_four_normalized',  # 'convergence_update'
+        #                 ]:
+        for measure in ['last_four_normalized']:
+            aggregate_dict[measure + '_std'] = [aggregate_dict[measure][1], ]
+        return aggregate_dict
+
+    def get_alg_dataset_dict(alg_list, envs, data_path):
+        alg_dataset_dict = {}
+        for algs in alg_list:
+            for alg in algs:
+                alg_dataset_dict[alg] = {}
+                for env in envs:
+                    folderpath = os.path.join(data_path, '%s_%s' % (alg, env))
+                    alg_dataset_dict[alg][env] = get_extra_dict_multiple_seeds(folderpath)
+        return alg_dataset_dict
+
+    def get_aggregated_value(alg_dataset_dict, alg, measure):
+        # for an alg-measure pair, aggregate over all datasets
+        value_list = []
+        for dataset, extra_dict in alg_dataset_dict[alg].items():
+            value_list.append(extra_dict[measure][0])  # each entry is the value from a dataset
+        return np.mean(value_list), np.std(value_list)
+
+    alg_dataset_dict = get_alg_dataset_dict(base_names, datasets, data_path)
+    x_values = [0.1, 0.2, 0.4, 0.6, 0.8, 1]
+    for i, alg_list in enumerate(base_names):
+        y_mean_list = []
+        y_std_list = []
+        for alg in alg_list:
+            y_mean, y_std = get_aggregated_value(alg_dataset_dict, alg, measure)
+            y_mean_list.append(y_mean)
+            y_std_list.append(y_std)
+        print(x_values, y_mean_list)
+        plt.errorbar(x_values, y_mean_list, yerr=y_std_list, fmt='o-', label=labels[i])
+
+    plt.xlabel('Fine-tuning Data Ratio', fontsize=axis_font_size)
+    plt.ylabel('Aggregated Normalized Score', fontsize=axis_font_size)
+    plt.yticks(fontsize=axis_font_size)
+    plt.xticks(fontsize=axis_font_size)
+    plt.legend(fontsize=legend_font_size)
+
+    if save_folder_path is not None:
+        if not os.path.isdir(save_folder_path):
+            path = Path(save_folder_path)
+            path.mkdir(parents=True)
+        save_path_full = os.path.join(save_folder_path, exp_name + '.png')
+
+        plt.savefig(save_path_full)
+        if verbose:
+            print(save_path_full)
+        plt.close()
+    else:
+        plt.show()
+
+
+
