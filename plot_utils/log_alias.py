@@ -498,23 +498,14 @@ for offR in [0.1, 0.2, 0.4, 0.6, 0.8]:
     for ns in [10, 100, 1000, 10000]:
         for pt in [0.1, 1, 10, 'inf3']:
             for preEp in [2, 8, 20, 100]:
-                cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
+                cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_pt{pt}_preEp{preEp}'] = \
                     f'cqlr3n_premdp_same_noproj_offRatio{offR}_l2_ns{ns}_pt{pt}_preEp{preEp}_sameTrue'
 for ns in [10, 100, 1000, 10000]:
     for pt in [0.1, 1, 10, 'inf3']:
         for preEp in [2, 8, 20, 100]:
-            cql_offRatio_mdp[f'cql_offR1_ns{ns}_tt{pt}_preEp{preEp}'] = \
+            cql_offRatio_mdp[f'cql_offR1_ns{ns}_pt{pt}_preEp{preEp}'] = \
                 f'iclr_cqlr3n_premdp_same_noproj_l2_ns{ns}_pt{pt}_sameTrue_preUps5000_preEp{preEp}'
-for offR in [0.1]:
-    for ns in [100]:
-        for pt in [1]:
-            for preEp in [20]:
-                cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_tt{pt}_preEp{preEp}'] = \
-                    f'cqlr3n_premdp_same_noproj_offRatio{offR}_l2_ns{ns}_pt{pt}_sameTrue'
-
-
-
-
+cql_offRatio_mdp[f'cql_offR0.1_ns100_pt1_preEp20'] = f'cqlr3n_premdp_same_noproj_offRatio0.1_l2_ns100_pt1_sameTrue'
 
 cql_identity = 'cqlr3n_premdp_same_noproj_l2_ns3500_ptidentity_preEp20_sameTrue'
 cql_case_mapping = 'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_sameTrue'

@@ -172,10 +172,10 @@ labels = [
     'ns10000'
 ]
 base_names = [[cql_offRatio_baseline[f'cql_offR{offR}_baseline'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]]]
-base_names += [[cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_tt1_preEp20'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]] for ns in [10, 100, 1000, 10000]]
+base_names += [[cql_offRatio_mdp[f'cql_offR{offR}_ns{ns}_pt1_preEp20'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]] for ns in [10, 100, 1000, 10000]]
 quick_scatter_plot(labels, base_names, datasets=LOCOMOTION_12_DATASETS, measure='last_four_normalized',
                    exp_name='ablation_ns', data_path=DATA_PATH, save_folder_path=FIGURE_SAVE_PATH,
-                   legend_font_size=LEGEND_FONT_SIZE, axis_font_size=AXIS_FONT_SIZE)
+                   legend_font_size=LEGEND_FONT_SIZE, axis_font_size=AXIS_FONT_SIZE, max_seeds=5)
 labels = [
     'CQL',
     '\u03C40.1',
@@ -184,10 +184,10 @@ labels = [
     'IID'
 ]
 base_names = [[cql_offRatio_baseline[f'cql_offR{offR}_baseline'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]]]
-base_names += [[cql_offRatio_mdp[f'cql_offR{offR}_ns100_tt{t}_preEp20'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]] for t in [0.1, 1, 10, 'inf3']]
+base_names += [[cql_offRatio_mdp[f'cql_offR{offR}_ns100_pt{t}_preEp20'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]] for t in [0.1, 1, 10, 'inf3']]
 quick_scatter_plot(labels, base_names, datasets=LOCOMOTION_12_DATASETS, measure='last_four_normalized',
                    exp_name='ablation_temp', data_path=DATA_PATH, save_folder_path=FIGURE_SAVE_PATH,
-                   legend_font_size=LEGEND_FONT_SIZE, axis_font_size=AXIS_FONT_SIZE)
+                   legend_font_size=LEGEND_FONT_SIZE, axis_font_size=AXIS_FONT_SIZE, max_seeds=5)
 labels = [
     'CQL',
     '10K',
@@ -196,10 +196,10 @@ labels = [
     '500K'
 ]
 base_names = [[cql_offRatio_baseline[f'cql_offR{offR}_baseline'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]]]
-base_names += [[cql_offRatio_mdp[f'cql_offR{offR}_ns100_tt1_preEp{ep}'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]] for ep in [2, 8, 20, 100]]
+base_names += [[cql_offRatio_mdp[f'cql_offR{offR}_ns100_pt1_preEp{ep}'] for offR in [0.1, 0.2, 0.4, 0.6, 0.8, 1]] for ep in [2, 8, 20, 100]]
 quick_scatter_plot(labels, base_names, datasets=LOCOMOTION_12_DATASETS, measure='last_four_normalized',
                    exp_name='ablation_preUps', data_path=DATA_PATH, save_folder_path=FIGURE_SAVE_PATH,
-                   legend_font_size=LEGEND_FONT_SIZE, axis_font_size=AXIS_FONT_SIZE)
+                   legend_font_size=LEGEND_FONT_SIZE, axis_font_size=AXIS_FONT_SIZE, max_seeds=5)
 
 
 
