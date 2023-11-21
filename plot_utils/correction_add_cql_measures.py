@@ -99,8 +99,20 @@ for root, dirs, files in os.walk(base_path):
 print(f'There are {error_count} failed operations :(')
 
 
-# print(len(settings), len(setting_names))
-# with open('patch_settings2.json', 'w') as settings_file:
-#     json.dump(settings, settings_file)
-# with open('patch_names2.json', 'w') as names_file:
-#     json.dump(setting_names, names_file)
+dir_list = [
+    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_halfcheetah_medium_s2048',
+    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium_s666',
+    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium_s1024',
+    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium-replay_s2048',
+    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium-replay_s666',
+    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium-replay_s1024',
+    'cqlr3n_premdp_same_noproj_offRatio0.8_l2_ns100_pt1_preEp20_sameTrue_walker2d_medium-replay_s666',
+    'cqlr3n_premdp_same_noproj_offRatio0.8_l2_ns100_pt1_preEp20_sameTrue_walker2d_medium-replay_s42',
+]
+for dir in dir_list:
+    generate_hotfix(dir, settings, setting_names)
+print(len(settings), len(setting_names))
+with open('patch_settings3.json', 'w') as settings_file:
+    json.dump(settings, settings_file)
+with open('patch_names3.json', 'w') as names_file:
+    json.dump(setting_names, names_file)

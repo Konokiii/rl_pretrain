@@ -241,10 +241,10 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
                     extra_dict = json.load(file)
                     for measure in measures:
                         aggregate_dict[measure].append(float(extra_dict[measure]))
-                    if f'cqlr3n_premdp_same_noproj_offRatio{0.4}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
-                        print(subdir)
-        if f'cqlr3n_premdp_same_noproj_offRatio{0.4}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
-            print(aggregate_dict['last_four_normalized'])
+        #             if f'cqlr3n_premdp_same_noproj_offRatio{0.6}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
+        #                 print(subdir)
+        # if f'cqlr3n_premdp_same_noproj_offRatio{0.6}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
+        #     print(aggregate_dict['last_four_normalized'])
         for measure in measures:
             if len(aggregate_dict[measure]) == 0:
                 print(datafolder_path, 'has nothing for measure:', measure)
