@@ -65,7 +65,7 @@ HYPERPARAM = {'env':'env', 'dataset':'dataset', 'offline_data_ratio':'offRatio',
 base_path = '../code/checkpoints/rebuttal/all_results'
 error_count = 0
 for root, dirs, files in os.walk(base_path):
-    if 'offRatio' in root:
+    if '/cqlr3n_prenone_l2_ep400' in root:
         for dir in dirs:
             # Go through every subfolder in this folder
             subfolder = os.path.join(root, dir)
@@ -76,7 +76,7 @@ for root, dirs, files in os.walk(base_path):
                         if str(extra_measures_dict['last_four_normalized']) == 'nan':
                             print(dir)
                             print('Warning: NAN detected!!')
-                            error_count += 1
+                            # error_count += 1
                             # shutil.rmtree(subfolder)
                             # generate_hotfix(dir, settings, setting_names)
 
@@ -93,26 +93,14 @@ for root, dirs, files in os.walk(base_path):
                                 json.dump(extra_dict, ex_file)
                     except Exception as e:
                         # shutil.rmtree(subfolder)
-                        # error_count += 1
+                        error_count += 1
                         print(dir)
                         print(e)
 print(f'There are {error_count} failed operations :(')
 
 
-dir_list = [
-    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_halfcheetah_medium_s2048',
-    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium_s666',
-    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium_s1024',
-    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium-replay_s2048',
-    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium-replay_s666',
-    'cqlr3n_premdp_same_noproj_offRatio0.4_l2_ns100_pt1_preEp20_sameTrue_ant_medium-replay_s1024',
-    'cqlr3n_premdp_same_noproj_offRatio0.8_l2_ns100_pt1_preEp20_sameTrue_walker2d_medium-replay_s666',
-    'cqlr3n_premdp_same_noproj_offRatio0.8_l2_ns100_pt1_preEp20_sameTrue_walker2d_medium-replay_s42',
-]
-for dir in dir_list:
-    generate_hotfix(dir, settings, setting_names)
-print(len(settings), len(setting_names))
-with open('patch_settings3.json', 'w') as settings_file:
-    json.dump(settings, settings_file)
-with open('patch_names3.json', 'w') as names_file:
-    json.dump(setting_names, names_file)
+# print(len(settings), len(setting_names))
+# with open('patch_settings3.json', 'w') as settings_file:
+#     json.dump(settings, settings_file)
+# with open('patch_names3.json', 'w') as names_file:
+#     json.dump(setting_names, names_file)

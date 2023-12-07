@@ -1,4 +1,3 @@
-
 # plot_measures = ['best_return_normalized', 'best_weight_diff', 'best_feature_diff',
 #                 'final_test_normalized_returns', 'final_weight_diff', 'final_feature_diff',
 #                 'best_return_normalized_std', 'final_test_normalized_returns_std', 'convergence_iter',
@@ -12,7 +11,7 @@ plot_measures = ['best_return_normalized', 'best_return_normalized_std', 'conver
                  'best_feature_sim', 'best_weight_sim', "best_0_weight_sim", "best_1_weight_sim",
                  ]
 plot_y_labels = ['Best Normalized Score', 'Best Normalized Score Std', 'Convergence Iter',
-                'Best Feature Diff', 'Best Weight Diff', 'Best Weight Diff L0',  'Best Weight Diff L1',
+                 'Best Feature Diff', 'Best Weight Diff', 'Best Weight Diff L0', 'Best Weight Diff L1',
                  'Best Feature Sim', 'Best Weight Sim', 'Best Weight Sim L0', 'Best Weight Sim L1',
                  ]
 
@@ -27,7 +26,6 @@ caption_list = ['CQL with different forward dynamics pretraining epochs.',
                 'DT with different model sizes.',
                 'DT with pretraining, and different perturbation noise std into the pretrained mdoel. ',
                 ]
-
 
 
 def print_figures_latex(figure_folder, figure_names, sub_figure_captions, caption='', ref_label=''):
@@ -70,6 +68,7 @@ ANTMAZE_6_DATASETS = ['%s_%s' % (e, d) for d in ANTMAZE_2_RULES for e in ANTMAZE
 def gen_cql_curves(figure_folder, datasets, exp_name):
     figure_names = []
     subfigure_captions = [d[0].upper() + d[1:] for d in datasets]
+    subfigure_captions = [cap.replace('_', '-') for cap in subfigure_captions]
 
     aggregate_name = 'agg-cql' if not exp_name else 'agg-cql_' + exp_name
 
@@ -99,5 +98,10 @@ def gen_cql_curves(figure_folder, datasets, exp_name):
     )
 
 
-gen_cql_curves(figure_folder='dzx_figures/cql_antmaze', datasets=LOCOMOTION_12_DATASETS, exp_name=None)
-
+exp_name_list = ['longer_baseline', 'fineUps_S', 'fineUps_Temp', 'fineUps_preT', 'antmaze_subopt', 'antmaze_tuned_a3',
+                 'simpler_synthetic']
+for exp_name in exp_name_list:
+    if exp_name in ['antmaze_subopt', 'antmaze_tuned_a3']:
+        gen_cql_curves(figure_folder='cql_new_figures/all_figures', datasets=ANTMAZE_6_DATASETS, exp_name=exp_name)
+    else:
+        gen_cql_curves(figure_folder='cql_new_figures/all_figures', datasets=LOCOMOTION_12_DATASETS, exp_name=exp_name)

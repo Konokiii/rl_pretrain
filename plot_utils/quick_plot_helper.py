@@ -12,7 +12,7 @@ DEFAULT_BASE_PATH = '../code/checkpints/'
 DEFAULT_SAVE_PATH = '../figures/'
 DEFAULT_ENVS = ('hopper',)
 DEFAULT_LINESTYLES = tuple(['solid' for _ in range(8)])
-DEFAULT_COLORS = ('tab:red', 'tab:orange', 'tab:blue', 'tab:brown', 'tab:pink', 'tab:olive', 'tab:green', 'tab:purple')
+DEFAULT_COLORS = ('tab:red', 'tab:orange', 'tab:blue', 'tab:green', 'tab:pink', 'tab:brown', 'tab:olive', 'tab:purple')
 DEFAULT_Y_VALUE = 'AverageTestEpRet'
 DEFAULT_SMOOTH = 1
 y_to_y_label = {
@@ -52,6 +52,10 @@ def combine_data_in_seeds(seeds, column_name, skip=0, smooth=1):
         if skip > 1:
             yhat = yhat[::skip]
         vals_list.append(yhat)
+    if len(set([vals.shape[0] for vals in vals_list])) > 1:
+        min_length = min([vals.shape[0] for vals in vals_list])
+        print(f'Loaded seeds do not have the same length! Truncate them to the smallest length of {min_length}...')
+        vals_list = [vals[:min_length] for vals in vals_list]
     return np.concatenate(vals_list)
 
 def quick_plot(labels, data_folders, colors=DEFAULT_COLORS, linestyles=DEFAULT_LINESTYLES, envs=DEFAULT_ENVS, base_data_folder_path=DEFAULT_BASE_PATH,
@@ -120,9 +124,9 @@ def quick_plot(labels, data_folders, colors=DEFAULT_COLORS, linestyles=DEFAULT_L
 def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COLORS, linestyles=DEFAULT_LINESTYLES, base_data_folder_path=DEFAULT_BASE_PATH,
                               save_name_prefix='test_save_figure', save_name_suffix=None, save_folder_path=DEFAULT_SAVE_PATH,
                               y_value=DEFAULT_Y_VALUE, verbose=True, ymin=None, ymax=None,
-                              y_use_log=None, x_to_use='Steps', xlabel='Number of Updates', axis_font_size=10, legend_font_size=10,
+                              y_use_log=None, x_to_use='Steps', xlabel='Number of Updates', xticks=None, axis_font_size=10, legend_font_size=10,
                               y_log_scale=False, x_always_scientific=True, smooth=1, shift=None, max_seeds=None,
-                              cutoff=None):
+                              cutoff=None, scatter_plot=False):
     # this plots
     label2seeds = OrderedDict()
     for label, data_folder_full_name_list in zip(labels, data_folder_full_names):
@@ -167,18 +171,28 @@ def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COL
                 y = 1-y
             if y_to_plot == 'total_time':
                 y = y / 3600
-            ax = sns.lineplot(x=x, y=y, n_boot=20, label=label, color=colors[i], linestyle=linestyles[i],
-                              linewidth=1)
             if cutoff is not None:
                 if cutoff[i] > 0:
                     x = x.reshape((num_seeds, -1))[:, :cutoff[i]].reshape(-1)
                     y = y.reshape((num_seeds, -1))[:, :cutoff[i]].reshape(-1)
             if shift is not None:
-                if shift[i] > 0: # This moves the curve to the right.
+                if shift[i] > 0: # This moves the curve to the right and cut the corresponding number of points from right.
                     x = x.reshape((num_seeds, -1))[:, shift[i]:].reshape(-1)
                     y = y.reshape((num_seeds, -1))[:, 0:-shift[i]].reshape(-1)
-            ax = sns.lineplot(x=x, y=y, n_boot=20, label=label, color=colors[i], linestyle=linestyles[i],
-                                  linewidth=1)
+                if shift[i] < 0: # This only moves the curve to the right without cutting.
+                    shift_value = x[-shift[i]-1]
+                    x = x + shift_value
+            marker = 'none'
+            if scatter_plot:
+                print('Generating scatter plots with 6 points.')
+                y = y.reshape((num_seeds, -1)).mean(axis=0)
+                total_len = y.shape[0]
+                scatter_index = [int(total_len*i) - 1 for i in [0.1, 0.2, 0.4, 0.6, 0.8, 1.0]]
+                x = x[:total_len][scatter_index]
+                y = y[scatter_index]
+                marker = 'o'
+            ax = sns.lineplot(x=x, y=y, n_boot=20, label=label, color=colors[i], linestyle=linestyles[i], linewidth=2,
+                              marker=marker)
 
         plt.xlabel(xlabel, fontsize=axis_font_size)
         y_label = y_to_y_label[y_to_plot] if y_to_plot in y_to_y_label else y_to_plot
@@ -193,7 +207,10 @@ def quick_plot_with_full_name(labels, data_folder_full_names, colors=DEFAULT_COL
             plt.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
 
         plt.yticks(fontsize=axis_font_size)
-        plt.xticks(fontsize=axis_font_size)
+        if xticks is not None:
+            plt.xticks(xticks, fontsize=axis_font_size, rotation=45)
+        else:
+            plt.xticks(fontsize=axis_font_size, rotation=45)
         plt.legend(fontsize=legend_font_size)
         plt.tight_layout()
         plt.tight_layout()
@@ -241,9 +258,9 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
                     extra_dict = json.load(file)
                     for measure in measures:
                         aggregate_dict[measure].append(float(extra_dict[measure]))
-        #             if f'cqlr3n_premdp_same_noproj_offRatio{0.6}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
+        #             if f'iclr_cqlr3n_prenone_l2' in datafolder_path:
         #                 print(subdir)
-        # if f'cqlr3n_premdp_same_noproj_offRatio{0.6}_l2_ns{100}_pt{1}_preEp{20}_sameTrue' in datafolder_path:
+        # if f'iclr_cqlr3n_prenone_l2' in datafolder_path:
         #     print(aggregate_dict['last_four_normalized'])
         for measure in measures:
             if len(aggregate_dict[measure]) == 0:
@@ -263,6 +280,8 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
 
     alg_dataset_dict = {}
     x_values = [0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
+    y_max = -100
+    y_min = 10000
     for i, algs_with_increasing_ratio in enumerate(base_names):
         y_mean_list = []
         for alg in algs_with_increasing_ratio:
@@ -273,15 +292,21 @@ def quick_scatter_plot(labels, base_names, datasets, measure, exp_name, data_pat
                 if possible_output:
                     alg_dataset_dict[alg][dataset_name] = possible_output
             y_mean, y_std = get_aggregated_value(alg_dataset_dict, alg, measure)
+            if y_mean > y_max:
+                y_max = y_mean
+            if y_mean < y_min:
+                y_min = y_mean
             y_mean_list.append(y_mean)
-        ax = sns.lineplot(x=x_values, y=y_mean_list, n_boot=20, label=labels[i], color=DEFAULT_COLORS[i], linewidth=1,
+        ax = sns.lineplot(x=x_values, y=y_mean_list, n_boot=20, label=labels[i], color=DEFAULT_COLORS[i], linewidth=2,
                           marker='o')
 
-    plt.xlabel('Fine-tuning Data Ratio', fontsize=axis_font_size)
-    plt.ylabel('Aggregated Normalized Score', fontsize=axis_font_size)
-    plt.yticks(fontsize=axis_font_size)
-    plt.xticks(fontsize=axis_font_size)
+    plt.xlabel('Finetune Data Ratio', fontsize=axis_font_size)
+    plt.ylabel('Normalized Score', fontsize=axis_font_size)
+    plt.xticks([0.1, 0.2, 0.4, 0.6, 0.8, 1.0], fontsize=axis_font_size, rotation=45)
+    plt.yticks(range(int(y_min), int(y_max), 5), fontsize=axis_font_size)
     plt.legend(fontsize=legend_font_size)
+    plt.tight_layout()
+    plt.tight_layout()
 
     if save_folder_path is not None:
         if not os.path.isdir(save_folder_path):

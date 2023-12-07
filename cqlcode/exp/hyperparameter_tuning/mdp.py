@@ -34,36 +34,30 @@ def main():
 
     variant = get_default_variant_dict() # this is a dictionary
     ###########################################################
-    exp_prefix = 'postICLR_best_cqlr3n'
+    exp_prefix = 'cqlr3n_actor_lr'
     settings = [
         'env', '', MUJOCO_4_ENVS,
         'dataset', '', MUJOCO_3_DATASETS,
         # 'do_pretrain_only', '', [True],
         'pretrain_mode', 'pre', ['mdp_same_noproj'],  # 'none', 'q_sprime', 'mdp_q_sprime'
-        'qf_hidden_layer', 'l', [2, 3],
+        'qf_hidden_layer', 'l', [2],
         'n_epochs', 'ep', [200],
         'use_safe_q', 'safeQ', [False],
         'mdppre_n_state', 'ns', [100],
         'mdppre_policy_temperature', 'pt', [1],
         'mdppre_same_as_s_and_policy', 'same', [True],
-        'n_pretrain_step_per_epoch', 'preUps', [5000],
-        'n_pretrain_epochs', 'preEp', [20],
+        'policy_lr', 'plr', [0.0001, 0.0003, 0.0006, 0.0009],
         'seed', '', [42, 666, 1024, 2048, 4069],
     ]
 
     indexes, actual_setting, total, hyper2logname = get_setting_dt(settings, setting)
     exp_name_full = get_auto_exp_name(actual_setting, hyper2logname, exp_prefix)
-    # replace default values with grid values
-
-    # TODO: Optimize the following part
-    cql_related_settings = {
-        'policy_lr': variant['cql'].policy_lr
-    }
 
     """replace values"""
+    cql_related_settings = ['policy_lr', 'cql_lagrange']
     for key, value in actual_setting.items():
         if key in cql_related_settings:
-            cql_related_settings[key] = value
+            setattr(variant['cql'], key, value)
         else:
             variant[key] = value
 
@@ -73,8 +67,6 @@ def main():
     variant["exp_name"] = logger_kwargs["exp_name"]
     variant['policy_hidden_layer'] = variant['qf_hidden_layer']
     variant['cql'].cql_n_actions = 3
-    variant['cql'].policy_lr = 1e-4
-    variant['cql'].cql_min_q_weight = 10.0
     run_single_exp(variant)
 
 

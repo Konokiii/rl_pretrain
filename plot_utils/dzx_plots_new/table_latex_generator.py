@@ -49,6 +49,8 @@ def get_extra_dict_multiple_seeds(datafolder_path):
     aggregate_dict['feature_diff_100k'] = []
 
     for subdir, dirs, files in os.walk(datafolder_path):
+        if len(aggregate_dict[measures[0]]) >= 5:
+            break
         if 'extra_new.json' in files or 'extra.json' in files:
             if 'extra_new.json' in files:
                 extra_dict_file_path = os.path.join(subdir, 'extra_new.json')
@@ -1769,9 +1771,61 @@ def dzx_iclr_abl_convergence(bold_thres):
 
 # dzx_20seeds()
 # dzx_generate_cql_main()
-data_path = '../../code/checkpoints/tuned_cql'
-bold_thres = 0.01
 # dzx_iclr_abl_ns(bold_thres)
 # dzx_iclr_abl_temp(bold_thres)
 # dzx_iclr_abl_update(bold_thres)
 # dzx_iclr_abl_convergence(bold_thres)
+
+
+def rebuttal_longer_baseline(bold_thres):
+    algs = [
+        iclr_cql,
+        cql_2x,
+        iclr_cql_mdp_ns100,
+        iclr_cql_iid_preT100k
+    ]
+
+    col_names = [
+        'Best Score',
+        'CQL',
+        'CQL+100K more',
+        'CQL+MDP',
+        'CQL+IID'
+    ]
+    envs = all_envs
+    alg_dataset_dict = get_alg_dataset_dict(algs, envs)
+    generate_per_env_score_table_new(algs, alg_dataset_dict, col_names)
+    generate_aggregate_performance(algs, alg_dataset_dict, col_names)
+
+    col_names[0] = 'Average Last Four'
+    generate_per_env_score_table_new(algs, alg_dataset_dict, col_names, measure='last_four_normalized', bold_threshold=bold_thres)
+    generate_aggregate_performance(algs, alg_dataset_dict, col_names, measure='last_four_normalized', bold_threshold=bold_thres)
+
+def rebuttal_simple_pretrain(bold_thres):
+    algs = [
+        iclr_cql,
+        iclr_cql_mdp_t1,
+        cql_identity,
+        cql_case_mapping
+    ]
+
+    col_names = [
+        'Best Score',
+        'CQL',
+        'CQL+MDP',
+        'CQL+Identity',
+        'CQL+Mapping'
+    ]
+    envs = all_envs
+    alg_dataset_dict = get_alg_dataset_dict(algs, envs)
+    generate_per_env_score_table_new(algs, alg_dataset_dict, col_names)
+    generate_aggregate_performance(algs, alg_dataset_dict, col_names)
+
+    col_names[0] = 'Average Last Four'
+    generate_per_env_score_table_new(algs, alg_dataset_dict, col_names, measure='last_four_normalized', bold_threshold=bold_thres)
+    generate_aggregate_performance(algs, alg_dataset_dict, col_names, measure='last_four_normalized', bold_threshold=bold_thres)
+
+
+data_path = '../../code/checkpoints/rebuttal/all_results'
+bold_thres = 0.01
+rebuttal_simple_pretrain(bold_thres)

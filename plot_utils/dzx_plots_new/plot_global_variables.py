@@ -17,9 +17,9 @@ D4RL_X_AXIS = 'Steps'
 
 # Plot settings:
 CURVE_SMOOTH = 5
-AXIS_FONT_SIZE = 10
-LEGEND_FONT_SIZE = 10
+AXIS_FONT_SIZE = 20
+LEGEND_FONT_SIZE = 14
 
 # Load/Save paths:
 DATA_PATH = '../../code/checkpoints/rebuttal/all_results'
-FIGURE_SAVE_PATH = '../../figures/offline_ratio'
+FIGURE_SAVE_PATH = '../../figures/rebuttal/abl_finetune_steps'
