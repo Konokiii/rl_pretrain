@@ -422,7 +422,7 @@ def run_single_exp(variant):
         index2action = 2 * np.random.rand(variant['mdppre_n_action'], pretrain_act_dim) - 1
         index2state, index2action = index2state.astype(np.float32), index2action.astype(np.float32)
     elif variant['pretrain_mode'] in ['offline_centroid']:
-        mean_sprime = dataset['next_observations'].mean(dim=0)
+        mean_sprime = dataset['next_observations'].mean(axis=0)
 
     best_agent = deepcopy(agent)
     agent_e20, return_e20, return_normalized_e20 = None, 0, 0
@@ -443,7 +443,6 @@ def run_single_exp(variant):
         with Timer() as train_timer:
             for batch_idx in range(variant['n_train_step_per_epoch']):
                 batch_offline = subsample_batch(dataset, variant['batch_size'])
-                batch_offline = batch_to_torch(batch_offline, variant['device'])
 
                 extra_q_loss = None
                 if variant['pretrain_mode'] != 'none' and epoch < variant['weight_reg_epochs']:
@@ -461,6 +460,7 @@ def run_single_exp(variant):
                     batch_reg = batch_to_torch(batch_reg, variant['device'])
                     extra_q_loss = agent.pretrain(batch_reg, pretrain_mode=variant['pretrain_mode'])
 
+                batch_offline = batch_to_torch(batch_offline, variant['device'])
                 metrics.update(prefix_metrics(agent.train(batch_offline, bc=epoch < variant['bc_epochs'],
                                                           safe_q_max=safe_q_max,
                                                           extra_q_loss=extra_q_loss,
