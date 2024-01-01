@@ -189,6 +189,7 @@ class FullyConnectedQFunction(nn.Module):
         input_tensor = torch.cat([observations, actions], dim=-1)
         return torch.squeeze(self.network(input_tensor), dim=-1)
 
+
 class FullyConnectedQFunctionPretrain(nn.Module):
 
     def __init__(self, obs_dim, action_dim, pretrain_output_dim=None, arch='256-256', orthogonal_init=False):
