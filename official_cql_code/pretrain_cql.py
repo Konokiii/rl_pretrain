@@ -147,7 +147,6 @@ def generate_mdp_data(n_traj, max_length, n_state, n_action, policy_temperature,
                  'actions': actions,
                  'next_observations': next_states}
 
-    os.makedirs(save_dir, exist_ok=True)
     joblib.dump(data_dict, data_save_path)
     print("Synthetic MDP data generation finished. Saved to:", data_save_path)
     return data_dict
@@ -221,7 +220,7 @@ def pretrain_with_batch(args, batch, optimizer, critic1, critic2):
     next_observations = batch['next_observations']
 
     obs_next_q1 = critic1.predict_next_obs(observations, actions)
-    obs_next_q2 = critic2.qf2.predict_next_obs(observations, actions)
+    obs_next_q2 = critic2.predict_next_obs(observations, actions)
     pretrain_loss1 = F.mse_loss(obs_next_q1, next_observations)
     pretrain_loss2 = F.mse_loss(obs_next_q2, next_observations)
     pretrain_loss = pretrain_loss1 + pretrain_loss2
@@ -256,7 +255,6 @@ def main(args):
 
     # Initialize two Q networks (critics) and their target networks
     critic_arch = '-'.join([str(args.critic_hidden_size) for _ in range(args.critic_hidden_layer)])
-
     critic1 = FullyConnectedQFunction(
         obs_dim=args.mdp_state_dim,
         action_dim=args.mdp_action_dim,
@@ -289,8 +287,8 @@ def main(args):
     if os.path.exists(pretrain_model_path):
         pretrain_dict = torch.load(pretrain_model_path, map_location=torch.device(args.device))
 
-        critic1.load_state_dict(pretrain_dict['critic1'].state_dict())
-        critic2.load_state_dict(pretrain_dict['critic2'].state_dict())
+        critic1.load_state_dict(pretrain_dict['critic1'])
+        critic2.load_state_dict(pretrain_dict['critic2'])
         print("Pretrained model loaded from:", pretrain_model_path)
 
     else:
@@ -306,10 +304,11 @@ def main(args):
             batch['actions'] = index2action[batch['actions']]
             batch = batch_to_torch(batch, args.device)
 
+            # Forward Dynamics Pretrain
             pretrain_with_batch(args, batch, optimizer, critic1, critic2)
 
-        pretrain_dict = {'critic1': critic1,
-                         'critic2': critic2,
+        pretrain_dict = {'critic1': critic1.state_dict(),
+                         'critic2': critic2.state_dict(),
                          'config': vars(args)
                          }
         torch.save(pretrain_dict, pretrain_model_path)
@@ -322,4 +321,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main()
+    args = pretrain_cql_args()
+    os.makedirs(args.data_dir, exist_ok=True)
+    os.makedirs(args.model_dir, exist_ok=True)
+    main(pretrain_cql_args())
