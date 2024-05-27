@@ -21,5 +21,5 @@ AXIS_FONT_SIZE = 20
 LEGEND_FONT_SIZE = 14
 
 # Load/Save paths:
-DATA_PATH = '../../code/checkpoints/rebuttal/all_results'
-FIGURE_SAVE_PATH = '../../figures/rebuttal/abl_finetune_steps'
+DATA_PATH = '../../code/checkpoints/rebuttal/antmaze'
+FIGURE_SAVE_PATH = '../../figures/antmaze10r'

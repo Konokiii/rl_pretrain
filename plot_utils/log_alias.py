@@ -512,6 +512,41 @@ cql_case_mapping = 'cqlr3n_premdp_same_noproj_l2_ns3500_ptcase_mapping_preEp20_s
 
 cql_diff = 'cqlr3n_diff_premdp_same_noproj_l2_ns100_pt1_preEp20_sameTrue'
 
+# 2024/1/04: antmaze_r10, regularizer, actor_lr
+cql_reg_same_regEp5 = 'cqlr3n_reg_preoffline_self_ep200_regEp5'
+cql_reg_same_regEp10 = 'cqlr3n_reg_preoffline_self_ep200_regEp10'
+cql_reg_same_regEp20 = 'cqlr3n_reg_preoffline_self_ep200_regEp20'
+
+cql_reg_offcen_regEp5 = 'cqlr3n_reg_preoffline_centroid_ep200_regEp5'
+cql_reg_offcen_regEp10 = 'cqlr3n_reg_preoffline_centroid_ep200_regEp10'
+cql_reg_offcen_regEp20 = 'cqlr3n_reg_preoffline_centroid_ep200_regEp20'
+
+cql_reg_mdp_regEp5 = 'cqlr3n_reg_presyn_mdp_ep200_regEp5_ns100_pt1_sameTrue'
+cql_reg_mdp_regEp10 = 'cqlr3n_reg_presyn_mdp_ep200_regEp10_ns100_pt1_sameTrue'
+cql_reg_mdp_regEp20 = 'cqlr3n_reg_presyn_mdp_ep200_regEp20_ns100_pt1_sameTrue'
+
+cql_reg_l2_wd001 = 'cqlr3n_reg_prenone_ep200_wd0.01'
+cql_reg_l2_wd01 = 'cqlr3n_reg_prenone_ep200_wd0.1'
+cql_reg_l2_wd1 = 'cqlr3n_reg_prenone_ep200_wd1'
+
+cql_actor_lr1e4 = 'cqlr3n_actor_lr_prenone_l2_ep200_plr0.0001_safeQFalse'
+cql_actor_lr3e4 = 'cqlr3n_actor_lr_prenone_l2_ep200_plr0.0003_safeQFalse'
+cql_actor_lr6e4 = 'cqlr3n_actor_lr_prenone_l2_ep200_plr0.0006_safeQFalse'
+cql_actor_lr9e4 = 'cqlr3n_actor_lr_prenone_l2_ep200_plr0.0009_safeQFalse'
+
+cql_mdp_actor_lr1e4 = 'cqlr3n_actor_lr_premdp_same_noproj_l2_ep200_safeQFalse_ns100_pt1_sameTrue_plr0.0001'
+cql_mdp_actor_lr3e4 = 'cqlr3n_actor_lr_premdp_same_noproj_l2_ep200_safeQFalse_ns100_pt1_sameTrue_plr0.0003'
+cql_mdp_actor_lr6e4 = 'cqlr3n_actor_lr_premdp_same_noproj_l2_ep200_safeQFalse_ns100_pt1_sameTrue_plr0.0006'
+cql_mdp_actor_lr9e4 = 'cqlr3n_actor_lr_premdp_same_noproj_l2_ep200_safeQFalse_ns100_pt1_sameTrue_plr0.0009'
+
+cql_antmaze_r10 = 'cqlr10n_tuned_prenone_l3_safeQFalse_lagFalse'
+cql_antmaze_r10_lag = 'cqlr10n_tuned_prenone_l3_safeQFalse_lagTrue'
+cql_antmaze_mdp_r10 = 'cqlr10n_tuned_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagFalse'
+cql_antmaze_mdp_r10_lag = 'cqlr10n_tuned_premdp_same_noproj_l3_ns100_pt1_sameTrue_preUps5000_preEp20_safeQFalse_lagTrue'
+cql_antmaze_smae_r10 = 'cqlr10n_tuned_preq_sprime_l3_safeQFalse_lagFalse'
+cql_antmaze_smae_r10_lag = 'cqlr10n_tuned_preq_sprime_l3_safeQFalse_lagTrue'
+
+
 
 
 

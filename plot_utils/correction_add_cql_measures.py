@@ -62,10 +62,10 @@ settings = []
 setting_names = []
 HYPERPARAM = {'env':'env', 'dataset':'dataset', 'offline_data_ratio':'offRatio', 'mdppre_n_state':'ns',
                    'mdppre_policy_temperature':'pt', 'n_pretrain_epochs':'preEp', 'seed':'s'}
-base_path = '../code/checkpoints/rebuttal/all_results'
+base_path = '../code/checkpoints/results2024'
 error_count = 0
 for root, dirs, files in os.walk(base_path):
-    if '/cqlr3n_prenone_l2_ep400' in root:
+    if '/cql' in root:
         for dir in dirs:
             # Go through every subfolder in this folder
             subfolder = os.path.join(root, dir)

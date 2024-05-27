@@ -63,6 +63,119 @@ def plot_cql_performance_curves(labels, base_names, shift=None, max_seeds=None, 
             legend_font_size=LEGEND_FONT_SIZE
         )
 
+# antmaze with 10 random actions:
+labels = [
+    'CQL',
+    'CQL+MDP',
+    'CQL+SAME',
+    'CQL+LAG',
+    'CQL+MDP+LAG',
+    'CQL+SAME+LAG'
+]
+base_names = [
+    cql_antmaze_r10,
+    cql_antmaze_mdp_r10,
+    cql_subopt_antmaze_same,
+    cql_antmaze_r10_lag,
+    cql_antmaze_mdp_r10_lag,
+    cql_antmaze_smae_r10_lag
+]
+
+plot_cql_performance_curves(labels, base_names, max_seeds=5, xlabel='Total Number of Updates', exp_name='antmaze_r10', datasets=ANTMAZE_6_DATASETS)
+
+# # cql with varying actor lr:
+# labels = [
+#     'CQL1e-4',
+#     'CQL3e-4',
+#     'CQL6e-4',
+#     'CQL9e-4',
+#     'MDP1e-4',
+#     'MDP3e-4',
+#     'MDP6e-4',
+#     'MDP9e-4',
+# ]
+# base_name = [
+#     cql_actor_lr1e4,
+#     cql_actor_lr3e4,
+#     cql_actor_lr6e4,
+#     cql_actor_lr9e4,
+#     cql_mdp_actor_lr1e4,
+#     cql_mdp_actor_lr3e4,
+#     cql_mdp_actor_lr6e4,
+#     cql_mdp_actor_lr9e4
+# ]
+#
+# plot_cql_performance_curves(labels, base_name, max_seeds=5, exp_name='cql_actor_lr')
+
+# # cql with l2 regularization:
+# labels = [
+#     'CQL',
+#     'CQL_MDP',
+#     'REG_L2_0.01',
+#     'REG_L2_0.1',
+#     'REG_L2_1',
+# ]
+# base_name = [
+#     iclr_cql,
+#     iclr_cql_mdp_t1,
+#     cql_reg_l2_wd001,
+#     cql_reg_l2_wd01,
+#     cql_reg_l2_wd1
+# ]
+# plot_cql_performance_curves(labels, base_name, max_seeds=5, exp_name='cql_reg_l2')
+#
+# # cql with mdp regularization:
+# labels = [
+#     'CQL',
+#     'CQL_MDP',
+#     'REG_MDP5',
+#     'REG_MDP10',
+#     'REG_MDP20',
+# ]
+# base_name = [
+#     iclr_cql,
+#     iclr_cql_mdp_t1,
+#     cql_reg_mdp_regEp5,
+#     cql_reg_mdp_regEp10,
+#     cql_reg_mdp_regEp20
+# ]
+# plot_cql_performance_curves(labels, base_name, max_seeds=5, exp_name='cql_reg_mdp')
+#
+# # cql with same_data regularization:
+# labels = [
+#     'CQL',
+#     'CQL_MDP',
+#     'REG_SAME5',
+#     'REG_SAME10',
+#     'REG_SAME20',
+# ]
+# base_name = [
+#     iclr_cql,
+#     iclr_cql_mdp_t1,
+#     cql_reg_same_regEp5,
+#     cql_reg_same_regEp10,
+#     cql_reg_same_regEp20
+# ]
+# plot_cql_performance_curves(labels, base_name, max_seeds=5, exp_name='cql_reg_same')
+#
+# # cql with same_data regularization:
+# labels = [
+#     'CQL',
+#     'CQL_MDP',
+#     'REG_OFFCEN5',
+#     'REG_OFFCEN10',
+#     'REG_OFFCEN20',
+# ]
+# base_name = [
+#     iclr_cql,
+#     iclr_cql_mdp_t1,
+#     cql_reg_offcen_regEp5,
+#     cql_reg_offcen_regEp10,
+#     cql_reg_offcen_regEp20
+# ]
+# plot_cql_performance_curves(labels, base_name, max_seeds=5, exp_name='cql_reg_offcen')
+
+
 # # CQL + 100K more:
 # labels = [
 #     'CQL',
@@ -79,55 +192,55 @@ def plot_cql_performance_curves(labels, base_names, shift=None, max_seeds=None, 
 # plot_cql_performance_curves(labels, base_names, shift=shift, max_seeds=5, cutoff=cutoff, xlabel='Total Number of Updates',
 #                             xticks=range(0, int(1.2e6), int(1e5)), exp_name='longer_baseline')
 
-# Finetune updates vs synthetic hyperparameters:
-xticks = [0.1e6, 0.2e6, 0.4e6, 0.6e6, 0.8e6, 1.0e6]
-labels = [
-    'CQL',
-    'S10',
-    'S100',
-    'S1,000',
-    'S10,000',
-]
-base_names = [
-    iclr_cql,
-    iclr_cql_mdp_ns10,
-    iclr_cql_mdp_ns100,
-    iclr_cql_mdp_ns1000,
-    iclr_cql_mdp_ns10000,
-]
-plot_cql_performance_curves(labels, base_names, shift=None, scatter_plot=True, xlabel='Number of Finetune Updates', xticks=xticks, exp_name='fineUps_S')
-
-labels = [
-    'CQL',
-    '\u03C40.1',
-    '\u03C41',
-    '\u03C410',
-    'CQL+IID',
-]
-base_names = [
-    iclr_cql,
-    iclr_cql_mdp_t01,
-    iclr_cql_mdp_t1,
-    iclr_cql_mdp_t10,
-    iclr_cql_iid_preT100k,
-]
-plot_cql_performance_curves(labels, base_names, shift=None, scatter_plot=True, xlabel='Number of Finetune Updates', xticks=xticks, exp_name='fineUps_Temp')
-
-labels = [
-    'CQL',
-    'Pre10K',
-    'Pre40K',
-    'Pre100K',
-    'Pre500K',
-]
-base_names = [
-    iclr_cql,
-    iclr_cql_mdp_preT10k,
-    iclr_cql_mdp_preT40k,
-    iclr_cql_mdp_preT100k,
-    iclr_cql_mdp_preT500k,
-]
-plot_cql_performance_curves(labels, base_names, shift=None, scatter_plot=True, xlabel='Number of Finetune Updates', xticks=xticks, exp_name='fineUps_preT')
+# # Finetune updates vs synthetic hyperparameters:
+# xticks = [0.1e6, 0.2e6, 0.4e6, 0.6e6, 0.8e6, 1.0e6]
+# labels = [
+#     'CQL',
+#     'S10',
+#     'S100',
+#     'S1,000',
+#     'S10,000',
+# ]
+# base_names = [
+#     iclr_cql,
+#     iclr_cql_mdp_ns10,
+#     iclr_cql_mdp_ns100,
+#     iclr_cql_mdp_ns1000,
+#     iclr_cql_mdp_ns10000,
+# ]
+# plot_cql_performance_curves(labels, base_names, shift=None, scatter_plot=True, xlabel='Number of Finetune Updates', xticks=xticks, exp_name='fineUps_S')
+#
+# labels = [
+#     'CQL',
+#     '\u03C40.1',
+#     '\u03C41',
+#     '\u03C410',
+#     'CQL+IID',
+# ]
+# base_names = [
+#     iclr_cql,
+#     iclr_cql_mdp_t01,
+#     iclr_cql_mdp_t1,
+#     iclr_cql_mdp_t10,
+#     iclr_cql_iid_preT100k,
+# ]
+# plot_cql_performance_curves(labels, base_names, shift=None, scatter_plot=True, xlabel='Number of Finetune Updates', xticks=xticks, exp_name='fineUps_Temp')
+#
+# labels = [
+#     'CQL',
+#     'Pre10K',
+#     'Pre40K',
+#     'Pre100K',
+#     'Pre500K',
+# ]
+# base_names = [
+#     iclr_cql,
+#     iclr_cql_mdp_preT10k,
+#     iclr_cql_mdp_preT40k,
+#     iclr_cql_mdp_preT100k,
+#     iclr_cql_mdp_preT500k,
+# ]
+# plot_cql_performance_curves(labels, base_names, shift=None, scatter_plot=True, xlabel='Number of Finetune Updates', xticks=xticks, exp_name='fineUps_preT')
 
 # # Antmaze:
 # labels = [
